@@ -117,7 +117,7 @@ $(document).ready(function() {
             }
         })
         requestPages.fail(function (jqXHR, textStatus, errorThrown){
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     }
 
@@ -143,7 +143,7 @@ $(document).ready(function() {
             	$stockRows = $("#stockList").find('tbody');
             	$.each(stocks, function(i, stock) {
                     $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td></tr>');
-                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">View Stock</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#delete-stock' + stock.id + '"><span class="fa fa-times"></span> Delete Stock</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Ins this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Outs this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="monthly' + stock.id + '"> </div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h6>' + stock.name + '</h6> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <input type="text" name="type" class="form-control"> </div><div class="col-6"> <small>Supplier Reference: <span class="text-danger">*</span></small> <input type="text" name="supplier_reference" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-6"> <small>In: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="in" class="form-control"> </div><div class="col-6"> <small>Out: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="out" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container" id="delete-stock' + stock.id + '"> <form action="../../controllers/admin/DeleteStock.php" method="post"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Delete Stock</h3> <small class="text-danger">Are you sure you want to delete this stock? All past transactions will be removed.</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-danger">Delete this stock</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">View Stock</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#delete-stock' + stock.id + '"><span class="fa fa-times"></span> Delete Stock</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Ins this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Outs this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h6>' + stock.name + '</h6> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <input type="text" name="type" class="form-control"> </div><div class="col-6"> <small>Supplier Reference: <span class="text-danger">*</span></small> <input type="text" name="supplier_reference" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-6"> <small>In: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="in" class="form-control"> </div><div class="col-6"> <small>Out: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="out" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container" id="delete-stock' + stock.id + '"> <form action="../../controllers/admin/DeleteStock.php" method="post"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Delete Stock</h3> <small class="text-danger">Are you sure you want to delete this stock? All past transactions will be removed.</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-danger">Delete this stock</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
                     //------------------------------------------PAGINATION-------------------------------------------------------
                     var thisMonthCurrentPage = 1;
                     var thisMonthTotalPages;
@@ -174,7 +174,7 @@ $(document).ready(function() {
                         }
                     });
                     requestForThisMonthPages.fail(function(jqXHR, textStatus, errorThrown) {
-                        $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                     $("#this-month-pagination"+ stock.id).on('click', '.page-item', function() {
                         if (!($(this).hasClass("disabled")))
@@ -257,21 +257,82 @@ $(document).ready(function() {
                             }
                         });
                         requestThisMonth.fail(function(jqXHR, textStatus, errorThrown) {
-                            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                         });                        
                     }
                     //-------------------------------------------------------------------------------------------------------------
                     //-------------------------------------------------MONTHLY REPORT----------------------------------------------
-                    let myChart = $("#monthlyChart" + stock.id);
-                    let monthlyChart = new Chart(myChart, {
-                        type: 'bar',
-                        data: {
-                            labels: [],
-                            datasets: []
-                        },
-                        options: {
+                    var monthlyBalances = [];
+                    var monthlyBalancesMonths = [];
+                    var monthlyIns = [];
+                    var monthlyInsMonths = [];
+                    var monthlyOuts = [];
+                    var monthlyOutsMonths = [];
 
+                    var requestMonthlyBalanceReport = $.ajax({
+                        url: '../../controllers/admin/MonthlyReport.php',
+                        type: 'POST',
+                        data: {
+                            stock_id: stock.id,
+                        },
+                    });
+                    requestMonthlyBalanceReport.done(function(response, textStatus, jqXHR) {
+                        var monthlyBalanceReport = JSON.parse(response);
+                        if (monthlyBalanceReport.length <= 0) {
+                            $("#monthlyReport" + stock.id).empty().append('<div class="alert alert-info">There are no transactions for stock yet.</div>');
+                        } else {
+                            $("#monthlyReport" + stock.id).empty().append('<ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#monthlyReportBalance' + stock.id + '">Monthly Balances Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportIns' + stock.id + '">Total Ins Per Month</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportOuts' + stock.id + '">Total Outs Per Month</a> </li></ul><div class="tab-content"> <div class="tab-pane fade show active container-fluid" id="monthlyReportBalance' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyBalanceChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportIns' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyInsChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportOuts' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyOutsChart' + stock.id + '"></canvas> </div></div></div></div>');
+                            $.each(monthlyBalanceReport, function(i, report) {
+                                monthlyBalances.push(parseFloat(report.balance));
+                                monthlyBalancesMonths.push(report.month);
+                            });
+                            let myBalanceChart = document.getElementById("monthlyBalanceChart" + stock.id).getContext('2d');
+                            let monthlyBalanceChart = new Chart(myBalanceChart, {
+                                type: 'bar',
+                                data: {
+                                    labels: monthlyBalancesMonths,
+                                    datasets: [{
+                                        label: "Monthly Balances",
+                                        data: monthlyBalances,
+                                        backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)',
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)',
+                                        ],
+                                        borderColor: [
+                                        'rgba(255,99,132,1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)',
+                                        'rgba(255,99,132,1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)',
+                                        ],
+                                        borderWidth: 1
+                                    }],
+                                },
+                                options: {
+
+                                }
+                            });
                         }
+                    });
+                    requestMonthlyBalanceReport.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                     //-------------------------------------------------------------------------------------------------------------
             	});
@@ -293,20 +354,20 @@ $(document).ready(function() {
                     });
                     requestAddParticular.done(function(response, textStatus, jqXHR) {
                         if (response === "ok") {
-                            $("#flash-message").empty().addClass("alert alert-success").show().append("Add particular successful!").delay( 5000 ).slideUp(300);
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Add particular successful!").delay( 5000 ).slideUp(300);
                             $modal.modal('toggle');
                             $('body').removeClass('modal-open');
                             $('.modal-backdrop').remove();
                             $('body').css('padding-right',0);
                             getMainInventory(data);
                         } else if (response === "qty<out") {
-                            $("#flash-message").empty().addClass("alert alert-warning").show().append("You have insufficient amount of quantity on this stock.").delay( 5000 ).slideUp(300);    
+                            $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("You have insufficient amount of quantity on this stock.").delay( 5000 ).slideUp(300);    
                         } else if (response === "err") {
-                            $("#flash-message").empty().addClass("alert alert-danger").show().append("Error adding particular. Check inputs again.").delay( 5000 ).slideUp(300);
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error adding particular. Check inputs again.").delay( 5000 ).slideUp(300);
                         }
                     });
                     requestAddParticular.fail(function(jqXHR, textStatus, errorThrown) {
-                        $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                     
                 });
@@ -314,7 +375,7 @@ $(document).ready(function() {
             }
         });
         requestStockList.fail(function (jqXHR, textStatus, errorThrown){
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     }
 });

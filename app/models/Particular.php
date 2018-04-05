@@ -47,6 +47,60 @@ class Particular
 		}
 		return $particulars;
 	}
+	public function monthlyReport($stock_id)
+	{
+		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$stmt = $this->connection->db_connection->prepare
+		("
+			SELECT MAX(monthname(grouped.date_time)) month, round(MAX(grouped.balance), 4) balance
+			FROM 
+			    (
+			        SELECT * FROM particulars p1
+			        RIGHT JOIN
+			            (SELECT stock_id sid, MAX(date_time) latest FROM particulars GROUP BY sid, MONTH(date_time), YEAR(date_time)) p2
+			        ON p1.date_time = p2.latest AND p1.stock_id = p2.sid
+			        WHERE p1.stock_id = :stock_id AND YEAR(p1.date_time) = YEAR(CURRENT_DATE())
+			    ) grouped
+			GROUP BY MONTH(date_time), YEAR(date_time)
+			ORDER BY MAX(grouped.date_time) ASC
+		");
+		$stmt->bindParam(":stock_id", $stock_id);
+		$stmt->execute();
+		$monthlyReport = $stmt->fetchAll();
+		return $monthlyReport;
+	}
+	public function monthlyReportIns($stock_id)
+	{
+		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$stmt = $this->connection->db_connection->prepare
+		("
+			SELECT min(monthname(grouped.date_time)) month, round(sum(grouped.`in`), 4) ins
+			FROM 
+			    (SELECT * FROM particulars WHERE stock_id = 3 AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
+			GROUP BY MONTH(date_time), YEAR(date_time)
+			ORDER BY min(grouped.date_time) ASC
+		");
+		$stmt->bindParam(":stock_id", $stock_id);
+		$stmt->execute();
+		$monthlyReportIns = $stmt->fetchAll();
+		return $monthlyReportIns;
+	}
+	public function monthlyReportOuts($stock_id)
+	{
+		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$stmt = $this->connection->db_connection->prepare
+		("
+			SELECT min(monthname(grouped.date_time)) month, round(sum(grouped.`out`), 4) outs
+			FROM 
+			    (SELECT * FROM particulars WHERE stock_id = 3 AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
+			GROUP BY MONTH(date_time), YEAR(date_time)
+			ORDER BY min(grouped.date_time) ASC
+		");
+		$stmt->bindParam(":stock_id", $stock_id);
+		$stmt->execute();
+		$monthlyReportOuts = $stmt->fetchAll();
+		return $monthlyReportOuts;
+	}
 	public function create($stock_id, $type, $supplier_reference, $in, $out, $user_id) 
 	{
 		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
