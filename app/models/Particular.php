@@ -76,7 +76,7 @@ class Particular
 		("
 			SELECT min(monthname(grouped.date_time)) month, round(sum(grouped.`in`), 4) ins
 			FROM 
-			    (SELECT * FROM particulars WHERE stock_id = 3 AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
+			    (SELECT * FROM particulars WHERE stock_id = :stock_id AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
 			GROUP BY MONTH(date_time), YEAR(date_time)
 			ORDER BY min(grouped.date_time) ASC
 		");
@@ -92,7 +92,7 @@ class Particular
 		("
 			SELECT min(monthname(grouped.date_time)) month, round(sum(grouped.`out`), 4) outs
 			FROM 
-			    (SELECT * FROM particulars WHERE stock_id = 3 AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
+			    (SELECT * FROM particulars WHERE stock_id = :stock_id AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
 			GROUP BY MONTH(date_time), YEAR(date_time)
 			ORDER BY min(grouped.date_time) ASC
 		");

@@ -143,7 +143,7 @@ $(document).ready(function() {
             	$stockRows = $("#stockList").find('tbody');
             	$.each(stocks, function(i, stock) {
                     $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td></tr>');
-                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">View Stock</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#delete-stock' + stock.id + '"><span class="fa fa-times"></span> Delete Stock</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Ins this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Outs this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h6>' + stock.name + '</h6> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <input type="text" name="type" class="form-control"> </div><div class="col-6"> <small>Supplier Reference: <span class="text-danger">*</span></small> <input type="text" name="supplier_reference" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-6"> <small>In: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="in" class="form-control"> </div><div class="col-6"> <small>Out: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="out" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container" id="delete-stock' + stock.id + '"> <form action="../../controllers/admin/DeleteStock.php" method="post"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Delete Stock</h3> <small class="text-danger">Are you sure you want to delete this stock? All past transactions will be removed.</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-danger">Delete this stock</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">Stock Overview</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#delete-stock' + stock.id + '"><span class="fa fa-times"></span> Delete Stock</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Ins this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Outs this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h6>' + stock.name + '</h6> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <input type="text" name="type" class="form-control"> </div><div class="col-6"> <small>Supplier Reference: <span class="text-danger">*</span></small> <input type="text" name="supplier_reference" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-6"> <small>In: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="in" class="form-control"> </div><div class="col-6"> <small>Out: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="out" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container" id="delete-stock' + stock.id + '"> <form action="../../controllers/admin/DeleteStock.php" method="post"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Delete Stock</h3> <small class="text-danger">Are you sure you want to delete this stock? All past transactions will be removed.</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-danger">Delete this stock</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
                     //------------------------------------------PAGINATION-------------------------------------------------------
                     var thisMonthCurrentPage = 1;
                     var thisMonthTotalPages;
@@ -261,13 +261,9 @@ $(document).ready(function() {
                         });                        
                     }
                     //-------------------------------------------------------------------------------------------------------------
-                    //-------------------------------------------------MONTHLY REPORT----------------------------------------------
+                    //--------------------------------------------MONTHLY BALANCE REPORT-------------------------------------------
                     var monthlyBalances = [];
                     var monthlyBalancesMonths = [];
-                    var monthlyIns = [];
-                    var monthlyInsMonths = [];
-                    var monthlyOuts = [];
-                    var monthlyOutsMonths = [];
 
                     var requestMonthlyBalanceReport = $.ajax({
                         url: '../../controllers/admin/MonthlyReport.php',
@@ -292,7 +288,7 @@ $(document).ready(function() {
                                 data: {
                                     labels: monthlyBalancesMonths,
                                     datasets: [{
-                                        label: "Monthly Balances",
+                                        label: "Monthly Balance (" + stock.unit + ")",
                                         data: monthlyBalances,
                                         backgroundColor: [
                                         'rgba(255, 99, 132, 0.2)',
@@ -326,9 +322,171 @@ $(document).ready(function() {
                                     }],
                                 },
                                 options: {
-
+                                    title: {
+                                        display: true,
+                                        text: 'Monthly Balances This Year',
+                                        fontSize: 25,
+                                    },
+                                    legend: {
+                                        position: 'right',
+                                        fontColor: '#000',
+                                    }
                                 }
                             });
+                            //-------------------------------------MONTHLY INS REPORT----------------------------------------------
+                            var monthlyIns = [];
+                            var monthlyInsMonths = [];
+
+                            var requestMonthlyInsReport = $.ajax({
+                                url: '../../controllers/admin/MonthlyReportIns.php',
+                                type: 'POST',
+                                data: {
+                                    stock_id: stock.id,
+                                },
+                            });
+                            requestMonthlyInsReport.done(function(response, textStatus, jqXHR) {
+                                var monthlyInsReport = JSON.parse(response);
+                                if (monthlyInsReport.length <= 0) {
+                                    $("#monthlyReportIns" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Ins for this stock yet.</div></div></div>');
+                                } else {
+                                    $.each(monthlyInsReport, function(i, report) {
+                                        monthlyIns.push(parseFloat(report.ins));
+                                        monthlyInsMonths.push(report.month);
+                                    });
+                                    let myInsChart = document.getElementById("monthlyInsChart" + stock.id).getContext('2d');
+                                    let monthlyInsChart = new Chart(myInsChart, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: monthlyInsMonths,
+                                            datasets: [{
+                                                label: "Monthly Ins (" + stock.unit + ")",
+                                                data: monthlyIns,
+                                                backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Monthly Ins This Year',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            requestMonthlyInsReport.fail(function(jqXHR, textStatus, errorThrown) {
+                                $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                            });
+                            //-----------------------------------------------------------------------------------------------------
+                            //--------------------------------------MONTHLY OUTS REPORT--------------------------------------------
+                            var monthlyOuts = [];
+                            var monthlyOutsMonths = [];
+
+                            var requestMonthlyOutsReport = $.ajax({
+                                url: '../../controllers/admin/MonthlyReportOuts.php',
+                                type: 'POST',
+                                data: {
+                                    stock_id: stock.id,
+                                },
+                            });
+                            requestMonthlyOutsReport.done(function(response, textStatus, jqXHR) {
+                                var monthlyOutsReport = JSON.parse(response);
+                                if (monthlyOutsReport.length <= 0) {
+                                    $("#monthlyReportOuts" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Outs for this stock yet.</div></div></div>');
+                                } else {
+                                    $.each(monthlyOutsReport, function(i, report) {
+                                        monthlyOuts.push(parseFloat(report.outs));
+                                        monthlyOutsMonths.push(report.month);
+                                    });
+                                    let myOutsChart = document.getElementById("monthlyOutsChart" + stock.id).getContext('2d');
+                                    let monthlyOutsChart = new Chart(myOutsChart, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: monthlyOutsMonths,
+                                            datasets: [{
+                                                label: "Monthly Outs (" + stock.unit + ")",
+                                                data: monthlyOuts,
+                                                backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Monthly Outs This Year',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            requestMonthlyOutsReport.fail(function(jqXHR, textStatus, errorThrown) {
+                                $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                            });
+                            //-----------------------------------------------------------------------------------------------------
                         }
                     });
                     requestMonthlyBalanceReport.fail(function(jqXHR, textStatus, errorThrown) {
