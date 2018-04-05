@@ -1,0 +1,57 @@
+#flash-message {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 9999;
+}
+.table > tbody > tr:hover {
+	cursor: pointer;
+}
+
+.nav-pills.flex-column .nav-item:hover {
+	background-color: #e0e0d1
+}
+
+.nav-pills.flex-column .nav-item > .active {
+	background-color: #008000
+}
+
+.nav.nav-tabs .nav-item a {
+	color: #59b300;
+}
+
+.nav.nav-tabs .nav-item:hover {
+	color: #408000;
+}
+
+.nav.nav-tabs .nav-item a.active {
+	color: #264d00;
+}
+
+input:focus, textarea:focus, select:focus {
+	border: 1px solid green !important;
+	box-shadow: 0 0 3px green !important;
+	-moz-box-shadow: 0 0 3px green !important;
+	-webkit-box-shadow: 0 0 3px green !important;
+}
+select {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+}
+
+.modal-big .modal-dialog {
+	min-width: 1300px !important;
+	width: 100%;
+}
+.pagination > li > a,
+.pagination > li > a:hover {
+    color: #59b300; // use your own color here
+}
+
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > a.active {
+    background-color: green !important;
+    border-color: green !important;
+}
