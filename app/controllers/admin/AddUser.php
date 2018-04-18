@@ -13,9 +13,11 @@ if (isset($_POST['name']) &&
 	isset($_POST['username']) &&
 	isset($_POST['email_address']) &&
 	isset($_POST['role']) &&
-	isset($_POST['password'])
+	isset($_POST['password']) &&
+	isset($_POST['security_question']) &&
+	isset($_POST['answer'])
 ) {
-	$is_added = $user->create($_POST['name'], $_POST['username'], $_POST['email_address'], $_POST['role'], $_POST['password']);
+	$is_added = $user->create($_POST['name'], $_POST['username'], $_POST['email_address'], $_POST['role'], $_POST['password'], $_POST['security_question'], $_POST['answer']);
 	if ($is_added === true) {
 		echo "ok";
 	} else {

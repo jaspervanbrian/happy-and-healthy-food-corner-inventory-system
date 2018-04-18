@@ -18,7 +18,7 @@ class Particular
 	public function thisMonthParticularPages($stock_id)
 	{
 		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE())");
+		$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND (type = 'Delivery' OR type = 'Purchase Order')");
 		$stmt->bindParam(":stock_id", $stock_id);
 		$stmt->execute();
 		return $stmt->rowCount();
@@ -26,7 +26,7 @@ class Particular
 	public function thisMonthParticular($stock_id, $page)
 	{
 		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) ORDER BY date_time DESC LIMIT :index, :upTo");
+		$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND (type = 'Delivery' OR type = 'Purchase Order') ORDER BY date_time DESC LIMIT :index, :upTo");
 		$stmt->bindParam(":stock_id", $stock_id);
 		$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
 		$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
@@ -59,7 +59,7 @@ class Particular
 			        RIGHT JOIN
 			            (SELECT stock_id sid, MAX(date_time) latest FROM particulars GROUP BY sid, MONTH(date_time), YEAR(date_time)) p2
 			        ON p1.date_time = p2.latest AND p1.stock_id = p2.sid
-			        WHERE p1.stock_id = :stock_id AND YEAR(p1.date_time) = YEAR(CURRENT_DATE())
+			        WHERE p1.stock_id = :stock_id AND YEAR(p1.date_time) = YEAR(CURRENT_DATE()) AND (type = 'Delivery' OR type = 'Purchase Order')
 			    ) grouped
 			GROUP BY MONTH(date_time), YEAR(date_time)
 			ORDER BY MAX(grouped.date_time) ASC
@@ -76,7 +76,7 @@ class Particular
 		("
 			SELECT min(monthname(grouped.date_time)) month, round(sum(grouped.`in`), 4) ins
 			FROM 
-			    (SELECT * FROM particulars WHERE stock_id = :stock_id AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
+			    (SELECT * FROM particulars WHERE stock_id = :stock_id AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND (type = 'Delivery' OR type = 'Purchase Order')) grouped
 			GROUP BY MONTH(date_time), YEAR(date_time)
 			ORDER BY min(grouped.date_time) ASC
 		");
@@ -92,7 +92,7 @@ class Particular
 		("
 			SELECT min(monthname(grouped.date_time)) month, round(sum(grouped.`out`), 4) outs
 			FROM 
-			    (SELECT * FROM particulars WHERE stock_id = :stock_id AND YEAR(date_time) = YEAR(CURRENT_DATE())) grouped
+			    (SELECT * FROM particulars WHERE stock_id = :stock_id AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND (type = 'Delivery' OR type = 'Purchase Order')) grouped
 			GROUP BY MONTH(date_time), YEAR(date_time)
 			ORDER BY min(grouped.date_time) ASC
 		");
@@ -101,7 +101,7 @@ class Particular
 		$monthlyReportOuts = $stmt->fetchAll();
 		return $monthlyReportOuts;
 	}
-	public function create($stock_id, $type, $supplier_reference, $in, $out, $user_id) 
+	public function create($stock_id, $type, $in, $out, $user_id) 
 	{
 		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE id = :stock_id");
@@ -114,6 +114,7 @@ class Particular
 		if ((float)$stock['current_qty'] < $out) {
 			return "qty<out";
 		} else {
+			$category = $stock['category'];
 			$current_qty = (float)$stock['current_qty'];
 			if ($out < 0 || $in < 0 || ($out <= 0 && $in <= 0 )) {
 				return false;
@@ -126,26 +127,104 @@ class Particular
 				$stmt->bindParam(":stock_id", $stock_id);
 
 				$status = "";
-				if ($current_qty <= 0) {
-					$status = "Out of stock";
-				} else if ($current_qty > 0 && $current_qty < 11) {
-					$status = "Needs Replenishment";
-				} else if ($current_qty >= 11 && $current_qty < 21) {
-					$status = "Low Stock";
-				} else if ($current_qty >= 21) {
-					$status = "High Stock";
+				$supplier_reference = "";
+				if ($category === "Meat") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 5) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 5 && $current_qty < 20) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 20) {
+						$status = "High Stock";
+					}
+				} else if ($category === "Vegetables") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 5) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 5 && $current_qty < 20) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 20) {
+						$status = "High Stock";
+					}
+				} else if ($category === "Packaging") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 1500) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 1500 && $current_qty < 3000) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 3000) {
+						$status = "High Stock";
+					}
+				} else if ($category === "Grocery") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 20) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 20 && $current_qty < 50) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 50) {
+						$status = "High Stock";
+					}
+				} else if ($category === "Rice") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 25) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 25 && $current_qty < 50) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 50) {
+						$status = "High Stock";
+					}
+				} else if ($category === "Sauce") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 2) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 2 && $current_qty < 4) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 4) {
+						$status = "High Stock";
+					}
+				} else if ($category === "Fruits") {
+					if ($current_qty <= 0) {
+						$status = "Out of stock";
+					} else if ($current_qty > 0 && $current_qty < 50) {
+						$status = "Needs Replenishment";
+					} else if ($current_qty >= 50 && $current_qty < 100) {
+						$status = "Low Stock";
+					} else if ($current_qty >= 100) {
+						$status = "High Stock";
+					}
 				}
 
 				$stmt->execute();
 
-				$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, supplier_reference, `in`, `out`, balance, date_time) VALUES (:stock_id, :user_id, :type, :supplier_reference, :in, :out, :balance, NOW())");
+				$price_balance = ($in + $out) * (float)$stock['price'];
+
+				$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, `in`, `out`, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :type, :in, :out, :balance, :price_balance, NOW())");
 				$stmt->bindParam(":stock_id", $stock_id);
 				$stmt->bindParam(":user_id", $user_id);
 				$stmt->bindParam(":type", $type);
-				$stmt->bindParam(":supplier_reference", $supplier_reference);
 				$stmt->bindParam(":in", $in);
 				$stmt->bindParam(":out", $out);
 				$stmt->bindParam(":balance", $current_qty);
+				$stmt->bindParam(":price_balance", $price_balance);
+				$stmt->execute();
+
+				$last_id = $this->connection->db_connection->lastInsertId();
+				if ($type === "Delivery") {
+					$supplier_reference = "DR#" . $last_id;
+				} else if ($type === "Purchase Order") {
+					$supplier_reference = "PO#" . $last_id;
+				} else if ($type === "Spoilage") {
+					$supplier_reference = "SP#" . $last_id;
+				}
+				$stmt = $this->connection->db_connection->prepare("UPDATE particulars SET supplier_reference = :supplier_reference WHERE id = :id");
+				$stmt->bindParam(":id", $last_id);
+				$stmt->bindParam(":supplier_reference", $supplier_reference);
 				$stmt->execute();
 				return true;
 			}

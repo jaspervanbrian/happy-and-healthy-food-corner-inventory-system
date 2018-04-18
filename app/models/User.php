@@ -17,7 +17,7 @@ class User
     {
         $this->connection = new Connection();
     }
-    public function create($name, $username, $email_address, $role, $password)
+    public function create($name, $username, $email_address, $role, $password, $security_question, $answer)
     {
         $name = trim($name);
         $username = trim($username);
@@ -31,12 +31,14 @@ class User
             $stmt->bindParam(":email_address", $email_address);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
-                $stmt = $this->connection->db_connection->prepare("INSERT INTO users (name, username, email_address, role, password) VALUES (:name, :username, :email_address, :role, :password)");
+                $stmt = $this->connection->db_connection->prepare("INSERT INTO users (name, username, email_address, role, password, security_question, answer) VALUES (:name, :username, :email_address, :role, :password, :security_question, :answer)");
                 $stmt->bindParam(":name", $name);
                 $stmt->bindParam(":username", $username);
                 $stmt->bindParam(":email_address", $email_address);
                 $stmt->bindParam(":role", $role);
                 $stmt->bindParam(":password", $password);
+                $stmt->bindParam(":security_question", $security_question);
+                $stmt->bindParam(":answer", $answer);
                 $stmt->execute();
                 return true;
             } else {

@@ -55,6 +55,7 @@ if (isset($_SESSION['user'])) {
 					<div class="col-3">
 						<select name="type" id="type" class="form-control">
 							<option value="name">Stock name/brand</option>
+							<option value="category">Category</option>
 							<option value="status">Status</option>
 							<option value="unit">Unit</option>
 						</select>
@@ -235,9 +236,21 @@ if (isset($_SESSION['user'])) {
 							</div>
 							<hr>
 							<div class="row p-t-35">
-								<div class="col-12"> 
+								<div class="col-6"> 
 									<small>Stock name/brand: <span class="text-danger">*</span></small> 
 									<input type="text" name="name" class="form-control" required> 
+								</div>
+								<div class="col-6">
+									<small>Category: <span class="text-danger">*</span></small> 
+									<select name="category" class="form-control" required>
+										<option value="Meat">Meat</option>
+										<option value="Vegetables">Vegetables</option>
+										<option value="Packaging">Packaging</option>
+										<option value="Grocery">Grocery</option>
+										<option value="Rice">Rice</option>
+										<option value="Sauce">Sauce</option>
+										<option value="Fruits">Fruits</option>
+									</select>
 								</div>
 							</div>
 							<div class="row p-t-35">
@@ -248,9 +261,20 @@ if (isset($_SESSION['user'])) {
 								<div class="col-6">
 									<small>Unit: <span class="text-danger">*</span></small> 
 									<select name="unit" class="form-control" required>
-										<option value="count">count</option>
+										<option value="gallons">gallons</option>
+										<option value="grams">grams</option>
 										<option value="kgs">kgs</option>
+										<option value="litters">litters</option>
+										<option value="pack">pack</option>
+										<option value="pieces">pieces</option>
+										<option value="oz">oz</option>
 									</select>
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-6">
+									<small>Price (PHP): <span class="text-danger">*</span></small> 
+									<input type="number" min="0" step="any" name="price" class="form-control" required>
 								</div>
 							</div>
 							<div class="row p-t-35">
@@ -310,6 +334,20 @@ if (isset($_SESSION['user'])) {
 								<div class="col-6">
 									<small>Password <span class="text-danger">*</span></small>
 									<input type="password" name="password" id="" class="form-control">
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-6">
+									<small>Security Question <span class="text-danger">*</span></small>
+									<select name="security_question" class="form-control" required>
+										<option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+										<option value="Where are you born?">Where are you born?</option>
+										<option value="What was the year you graduated from elementary?">What was the year you graduated from elementary?</option>
+									</select>
+								</div>
+								<div class="col-6">
+									<small>Answer: <span class="text-danger">*</span></small>
+									<input type="text" name="answer" class="form-control" required>
 								</div>
 							</div>
 							<div class="row p-t-35">

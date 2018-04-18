@@ -141,6 +141,8 @@ $(document).ready(function() {
                 email_address: $form.find("input[name='email_address']").val(),
                 role: $form.find("select[name='role']").val(),
                 password: $form.find("input[name='password']").val(),
+                security_question: $form.find("select[name='security_question']").val(),
+                answer: $form.find("input[name='answer']").val(),
             },
         });
         request.done(function(response, textStatus, jqXHR) {

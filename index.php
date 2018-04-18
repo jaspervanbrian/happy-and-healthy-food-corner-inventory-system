@@ -71,6 +71,12 @@
 					</div>
 
 					<div class="text-center p-t-12">
+						<span class="txt1">
+							Forgot
+						</span>
+						<a class="txt2" href="#" data-toggle="modal" data-target="#forgotPasswordModal">
+							Password?
+						</a>
 					</div>
 
 					<div class="text-center p-t-70">
@@ -81,7 +87,52 @@
 	</div>
 	<div id="flash-message" class="" role="alert"></div>
 	
-	
+	<div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modal-title">Forgot Password</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="forgotPasswordBody">
+					<form action="app/controllers/ForgotPasswordUsername.php" method="post" class="validateUsername">
+						<div class="row">
+							<div class="col-12">
+								<h5>
+									<span class="text-success"><i class="fa fa-user"></i>&nbsp;Enter Username</span>
+									&nbsp;&nbsp;&nbsp;
+									<span class="fa fa-caret-right"></span>
+									&nbsp;&nbsp;&nbsp;
+									<span class="text-secondary"><i class="fa fa-question-circle"></i>&nbsp;Answer Security Question</span>
+									&nbsp;&nbsp;&nbsp;
+									<span class="fa fa-caret-right"></span>
+									&nbsp;&nbsp;&nbsp;
+									<span class="text-secondary"><i class="fa fa-lock"></i>&nbsp;Change Password</span>
+								</h5>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-12">
+								<p>Username:</p>
+								<input type="text" name="username" class="form-control" required>
+							</div>
+						</div>
+						<div class="row p-t-35">
+							<div class="col-12 d-flex justify-content-center"> 
+								<button type="submit" class="btn btn-success">Submit</button> 
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	
 <!--===============================================================================================-->	

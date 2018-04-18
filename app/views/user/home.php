@@ -186,6 +186,7 @@ if (isset($_SESSION['user'])) {
 <!--===============================================================================================-->
 	<script src="../../../node_modules/chart.js/dist/Chart.bundle.min.js"></script>
 	<script src="../../assets/js/user/inventory.js"></script>
+	<script src="../../assets/js/user/user.js"></script>
 <!--===============================================================================================-->
 
   	<?php
