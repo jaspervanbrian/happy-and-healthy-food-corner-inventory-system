@@ -256,7 +256,7 @@ if (isset($_SESSION['user'])) {
 							<div class="row p-t-35">
 								<div class="col-6"> 
 									<small>Initial Quantity: <span class="text-danger">*</span></small> 
-									<input type="number" min="0" step="any" name="current_qty" class="form-control" required> 
+									<input type="number" min="0.0001" step="any" name="current_qty" class="form-control" required> 
 								</div>
 								<div class="col-6">
 									<small>Unit: <span class="text-danger">*</span></small> 
@@ -271,10 +271,21 @@ if (isset($_SESSION['user'])) {
 									</select>
 								</div>
 							</div>
-							<div class="row p-t-35">
+							<hr>
+							<div class="row">
 								<div class="col-6">
 									<small>Price (PHP): <span class="text-danger">*</span></small> 
-									<input type="number" min="0" step="any" name="price" class="form-control" required>
+									<input type="number" min="0.0001" step="any" name="price" class="form-control" required>
+								</div>
+							</div>
+							<div class="row m-t-35">
+								<div class="col-6">
+									<small>Supplier: <span class="text-danger">*</span></small> 
+									<input type="text" name="supplier" class="form-control" required>
+								</div>
+								<div class="col-6">
+									<small>Supplier Location: <span class="text-danger">*</span></small> 
+									<input type="text" name="supplier_location" class="form-control" required>
 								</div>
 							</div>
 							<div class="row p-t-35">

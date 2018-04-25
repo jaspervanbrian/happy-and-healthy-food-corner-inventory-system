@@ -10,11 +10,10 @@ use App\Models\Particular;
 $particular = new Particular();
 
 if (isset($_POST['stock_id']) &&
-	isset($_POST['type']) &&
-	isset($_POST['amount']) &&
+	isset($_POST['quantity']) &&
 	isset($_SESSION['user'])
 ) {
-	$is_added = $particular->create($_POST['stock_id'], $_POST['type'], $_POST['amount'], $_SESSION['user']['id']);
+	$is_added = $particular->create($_POST['stock_id'], "Spoilage", $_POST['quantity'], $_SESSION['user']['id']);
 	if ($is_added === true) {
 		echo "ok";
 	} else {

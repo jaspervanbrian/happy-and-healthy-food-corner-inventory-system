@@ -13,9 +13,11 @@ if (isset($_POST['name']) &&
 	isset($_POST['category']) &&
 	isset($_POST['unit']) &&
 	isset($_POST['current_qty']) &&
-	isset($_POST['price'])
+	isset($_POST['price']) &&
+	isset($_POST['supplier']) &&
+	isset($_POST['supplier_location'])
 ) {
-	$is_added = $stock->create($_POST['name'], $_POST['category'], $_POST['unit'], $_POST['current_qty'], $_POST['price']);
+	$is_added = $stock->create($_POST['name'], $_POST['category'], $_POST['unit'], $_POST['current_qty'], $_POST['price'], $_POST['supplier'], $_POST['supplier_location']);
 	if ($is_added) {
 		$_SESSION['add'] = "ok";
 	} else {

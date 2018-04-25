@@ -94,7 +94,7 @@ class Stock
             return $stmt->rowCount();
         }
     }
-    public function create($name, $category, $unit, $current_qty, $price)
+    public function create($name, $category, $unit, $current_qty, $price, $supplier, $supplier_location)
     {
         $name = trim($name);
         $category = trim($category);
@@ -182,13 +182,32 @@ class Stock
             }
         }
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, status) VALUES (:name, :category, :unit, :current_qty, :price, :status)");
+        $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, supplier, supplier_location, status) VALUES (:name, :category, :unit, :current_qty, :price, :supplier, :supplier_location, :status)");
         $stmt->bindParam(":name", $name);
         $stmt->bindParam(":category", $category);
         $stmt->bindParam(":unit", $unit);
         $stmt->bindParam(":current_qty", $current_qty);
         $stmt->bindParam(":price", $price);
+        $stmt->bindParam(":supplier", $supplier);
+        $stmt->bindParam(":supplier_location", $supplier_location);
         $stmt->bindParam(":status", $status);
+        $stmt->execute();
+        return true;
+    }
+    public function updatePrice($stock_id, $stock_price)
+    {
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET price = :price, last_price_changed = NOW() WHERE id = :id");
+        $stmt->bindParam(":id", $stock_id);
+        $stmt->bindParam(":price", $stock_price);
+        $stmt->execute();
+        return true;
+    }
+    public function updateSupplier($stock_id, $supplier, $supplier_location)
+    {
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET supplier = :supplier, supplier_location = :supplier_location, last_supplier_changed = NOW() WHERE id = :id");
+        $stmt->bindParam(":id", $stock_id);
+        $stmt->bindParam(":supplier", $supplier);
+        $stmt->bindParam(":supplier_location", $supplier_location);
         $stmt->execute();
         return true;
     }
