@@ -352,7 +352,7 @@ if (isset($_SESSION['user'])) {
 									<small>Security Question <span class="text-danger">*</span></small>
 									<select name="security_question" class="form-control" required>
 										<option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-										<option value="Where are you born?">Where are you born?</option>
+										<option value="Where are you born?">Where were you born?</option>
 										<option value="What was the year you graduated from elementary?">What was the year you graduated from elementary?</option>
 									</select>
 								</div>

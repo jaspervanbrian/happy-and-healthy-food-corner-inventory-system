@@ -273,11 +273,11 @@ class Particular
 
 			$last_id = $this->connection->db_connection->lastInsertId();
 			if ($type === "Delivery to UST Branch" || $type === "Delivery to De La Salle Branch") {
-				$supplier_reference = "DR#" . date('dmYHis') . $last_id;
+				$supplier_reference = "DR#" . date('HisdmY') . $last_id;
 			} else if ($type === "Purchase Order") {
-				$supplier_reference = "PO#" . date('dmYHis') . $last_id;
+				$supplier_reference = "PO#" . date('HisdmY') . $last_id;
 			} else if ($type === "Spoilage") {
-				$supplier_reference = "SP#" . date('dmYHis') . $last_id;
+				$supplier_reference = "SP#" . date('HisdmY') . $last_id;
 			}
 			$stmt = $this->connection->db_connection->prepare("UPDATE particulars SET supplier_reference = :supplier_reference WHERE id = :id");
 			$stmt->bindParam(":id", $last_id);

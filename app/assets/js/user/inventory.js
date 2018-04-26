@@ -1,8 +1,11 @@
 $(document).ready(function() {
     var requestStockList;
-	var requestPages;
+    var requestPages;
     var currentPage;
     var totalPages;
+
+    var sortBy = "name";
+    var step = "ASC";
 
     var data = {
         type: $("#type").val(),
@@ -46,6 +49,8 @@ $(document).ready(function() {
                     type: $("#type").val(),
                     keyword: $("#searchKeyword").val(),
                     page: currentPage,
+                    orderby: sortBy,
+                    step: step,
                 };
                 getMainInventory(data);
                 if (currentPage === 1) {
@@ -62,6 +67,8 @@ $(document).ready(function() {
                     type: $("#type").val(),
                     keyword: $("#searchKeyword").val(),
                     page: currentPage,
+                    orderby: sortBy,
+                    step: step,
                 };
                 getMainInventory(data);
                 if (currentPage === totalPages) {
@@ -75,6 +82,8 @@ $(document).ready(function() {
                     type: $("#type").val(),
                     keyword: $("#searchKeyword").val(),
                     page: currentPage,
+                    orderby: sortBy,
+                    step: step,
                 };
                 getMainInventory(data);
                 if (currentPage === 1) {
@@ -135,15 +144,135 @@ $(document).ready(function() {
         requestStockList.done(function (response, textStatus, jqXHR){
             var stocks = JSON.parse(response);
             if (stocks.length === 0) {
-            	$("#stockList").empty().append('<div class="alert alert-danger">No items found.</div>');
+                $("#stockList").empty().append('<div class="alert alert-danger">No items found.</div>');
                 $("#stockModals").empty();
             } else {
                 $("#stockModals").empty();
-            	$("#stockList").empty().append('<table class="table table-hover"><thead class="thead-dark"><tr><th>Name/Brand</th><th>Quantity</th><th>Unit</th><th>Status</th></tr></thead><tbody></tbody></table>');
-            	$stockRows = $("#stockList").find('tbody');
-            	$.each(stocks, function(i, stock) {
-                    $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td></tr>');
-                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">Stock Overview</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Ins this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Outs this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <small>Unit: ' + stock.unit + '</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h6>' + stock.name + '</h6> <small>Unit: ' + stock.unit + '</small> </div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <input type="text" name="type" class="form-control"> </div><div class="col-6"> <small>Supplier Reference: <span class="text-danger">*</span></small> <input type="text" name="supplier_reference" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-6"> <small>In: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="in" class="form-control"> </div><div class="col-6"> <small>Out: <span class="text-danger">*</span></small> <input type="number" step="any" min="0" value="0" name="out" class="form-control"> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+                $("#stockList").empty().append('<table class="table table-hover"> <thead class="thead-dark"> <tr> <th class="sortBy ' + (sortBy==="name" ? "sorted" : "") + '">Name/Brand ' + (sortBy==="name" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="name" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="category" ? "sorted" : "") + '">Category ' + (sortBy==="category" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="category" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="current_qty" ? "sorted" : "") + '">Quantity ' + (sortBy==="current_qty" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="current_qty" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="unit" ? "sorted" : "") + '">Unit ' + (sortBy==="unit" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="unit" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="price" ? "sorted" : "") + '">Price ' + (sortBy==="price" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="price" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="status" ? "sorted" : "") + '">Status ' + (sortBy==="status" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="status" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> </tr></thead> <tbody> </tbody></table>');
+                $(".sortBy").on('click', function() {
+                    var text = $.trim($(this).text());
+                    var sorted = $.trim($("#stockList").find(".sorted").text());
+
+                    if (text === "Name/Brand") {
+                        sortBy = "name";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Category") {
+                        sortBy = "category";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Quantity") {
+                        sortBy = "current_qty";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Unit") {
+                        sortBy = "unit";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Price") {
+                        sortBy = "price";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Status") {
+                        sortBy = "status";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    }
+                });
+                $stockRows = $("#stockList").find('tbody');
+                $.each(stocks, function(i, stock) {
+                    $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.category + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td>₱' + stock.price + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td></tr>');
+                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">Stock Overview</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilages' + stock.id + '"><span class="fa fa-trash"></span> Spoilages Summary</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <p>Supplier: ' + stock.supplier + '</p><p>Supplier: ' + stock.supplier_location + '</p>' + ((stock.last_supplier_changed) ? " <p>(Supplier details was updated at: " + stock.last_supplier_changed + ")</p>" : "") + ' </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + " " + stock.unit + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Purchase Orders this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Deliveries this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Spoilages this month:</small> <h5 id="spoilagesTotal' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h4>' + stock.name + '</h4> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <select name="type" class="form-control" required> <option value="Delivery to UST Branch">Delivery to UST Branch</option> <option value="Delivery to De La Salle Branch">Delivery to De La Salle Branch</option> <option value="Purchase Order">Purchase Order</option> </select> </div><div class="col-6"> <small>Amount: <span class="text-danger">*</span></small> <input type="number" step="any" min="0.0001" name="amount" class="form-control" required> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container-fluid" id="spoilages' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <h6>Legend:</h6> <p><small>SP: Spoilage Issue</small></p></div></div><hr> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#spoilagesSummary' + stock.id + '">Detailed spoilage summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilagesChart' + stock.id + '">Spoilages report</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active" id="spoilagesSummary' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="spoilagesList' + stock.id + '"></div></div></div><div class="tab-pane fade" id="spoilagesChart' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="monthlySpoilagesBody' + stock.id + '"> <canvas id="monthlySpoilages' + stock.id + '"></canvas> </div></div><hr> <div class="row"> <div class="col-12" id="monthlyPriceSpoilagesBody' + stock.id + '"> <canvas id="monthlyPriceSpoilages' + stock.id + '"></canvas> </div></div></div></div></div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
                     //------------------------------------------PAGINATION-------------------------------------------------------
                     var thisMonthCurrentPage = 1;
                     var thisMonthTotalPages;
@@ -235,6 +364,7 @@ $(document).ready(function() {
                     function getThisMonth(thisMonthData) {
                         var ins = 0;
                         var outs = 0;
+
                         var requestThisMonth = $.ajax({
                             url: '../../controllers/admin/ThisMonth.php',
                             type: 'POST',
@@ -245,15 +375,18 @@ $(document).ready(function() {
                             if (particulars.length === 0) {
                                 $("#particularList"+ stock.id).empty().append('<div class="alert alert-info">There are no transactions for this month yet.</div>');
                             } else {
-                                $("#particularList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Type</th> <th>Supplier Reference</th> <th>In</th> <th>Out</th> <th>Balance</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
+                                $("#particularList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Type</th> <th>Supplier Reference</th> <th>Quantity</th> <th>Remaining</th> <th>Price</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
                                 var $particularRows = $("#particularList"+ stock.id).find('tbody');
                                 $.each(particulars, function(i, particular) {
-                                    ins += parseFloat(particular.in);
-                                    outs += parseFloat(particular.out);
-                                    $particularRows.append('<tr><td>' + particular.date + '</td><td>' + particular.time + '</td><td>' + particular.type + '</td><td>' + particular.supplier_reference + '</td><td>' + (particular.in > 0 ? particular.in : "") + '</td><td>' + (particular.out > 0 ? particular.out : "") + '</td><td>' + particular.balance + '</td><td>' + particular.issued_by + '</td></tr>');
+                                    if (particular.type === "Purchase Order") {
+                                        ins += parseFloat(particular.amount);
+                                    } else if (particular.type === "Delivery to UST Branch" || particular.type === "Delivery to De La Salle Branch") {
+                                        outs += parseFloat(particular.amount);
+                                    }
+                                    $particularRows.append('<tr><td>' + particular.date + '</td><td>' + particular.time + '</td><td>' + particular.type + '</td><td>' + particular.supplier_reference + '</td><td>' + particular.amount + " " + stock.unit + '</td><td>' + particular.balance + " " + stock.unit + '</td><td>₱' + particular.price_balance + '</td><td>' + particular.issued_by + '</td></tr>');
                                 });
-                                $("#ins" + stock.id).text(ins);
-                                $("#outs" + stock.id).text(outs);
+                                $("#ins" + stock.id).text(ins + " " + stock.unit +" (₱" + (ins * stock.price) + ")");
+                                $("#outs" + stock.id).text(outs + " " + stock.unit +" (₱" + (outs * stock.price) + ")");
                             }
                         });
                         requestThisMonth.fail(function(jqXHR, textStatus, errorThrown) {
@@ -264,6 +397,7 @@ $(document).ready(function() {
                     //--------------------------------------------MONTHLY BALANCE REPORT-------------------------------------------
                     var monthlyBalances = [];
                     var monthlyBalancesMonths = [];
+                    var monthlyPriceBalances = [];
 
                     var requestMonthlyBalanceReport = $.ajax({
                         url: '../../controllers/admin/MonthlyReport.php',
@@ -277,10 +411,11 @@ $(document).ready(function() {
                         if (monthlyBalanceReport.length <= 0) {
                             $("#monthlyReport" + stock.id).empty().append('<div class="alert alert-info">There are no transactions for stock yet.</div>');
                         } else {
-                            $("#monthlyReport" + stock.id).empty().append('<ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#monthlyReportBalance' + stock.id + '">Monthly Balances Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportIns' + stock.id + '">Total Ins Per Month</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportOuts' + stock.id + '">Total Outs Per Month</a> </li></ul><div class="tab-content"> <div class="tab-pane fade show active container-fluid" id="monthlyReportBalance' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyBalanceChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportIns' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyInsChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportOuts' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyOutsChart' + stock.id + '"></canvas> </div></div></div></div>');
+                            $("#monthlyReport" + stock.id).empty().append('<ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#monthlyReportBalance' + stock.id + '">Monthly Balances Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportIns' + stock.id + '">Total Purchase Orders Per Month</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportOuts' + stock.id + '">Total Deliveries Per Month</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportOutsUST' + stock.id + '">Total Deliveries To UST Branch</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthlyReportOutsDLSU' + stock.id + '">Total Deliveries To DLSU Branch</a> </li></ul><div class="tab-content"> <div class="tab-pane fade show active container-fluid" id="monthlyReportBalance' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyBalanceChart' + stock.id + '"></canvas> <hr> <canvas id="monthlyPriceBalanceChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportIns' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyInsChart' + stock.id + '"></canvas> <hr> <canvas id="monthlyPriceInsChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportOuts' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyOutsChart' + stock.id + '"></canvas> <hr> <canvas id="monthlyPriceOutsChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportOutsUST' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyOutsUSTChart' + stock.id + '"></canvas> <hr> <canvas id="monthlyPriceOutsUSTChart' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade container-fluid" id="monthlyReportOutsDLSU' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <canvas id="monthlyOutsDLSUChart' + stock.id + '"></canvas> <hr> <canvas id="monthlyPriceOutsDLSUChart' + stock.id + '"></canvas> </div></div></div></div>');
                             $.each(monthlyBalanceReport, function(i, report) {
                                 monthlyBalances.push(parseFloat(report.balance));
                                 monthlyBalancesMonths.push(report.month);
+                                monthlyPriceBalances.push(report.price_balance);
                             });
                             let myBalanceChart = document.getElementById("monthlyBalanceChart" + stock.id).getContext('2d');
                             let monthlyBalanceChart = new Chart(myBalanceChart, {
@@ -333,8 +468,38 @@ $(document).ready(function() {
                                     }
                                 }
                             });
+                            let myPriceBalanceChart = document.getElementById("monthlyPriceBalanceChart" + stock.id).getContext('2d');
+                            let monthlyPriceBalanceChart = new Chart(myPriceBalanceChart, {
+                                type: 'line',
+                                data: {
+                                    labels: monthlyBalancesMonths,
+                                    datasets: [{
+                                        label: "Amount of monthly balance (₱)",
+                                        data: monthlyPriceBalances,
+                                        backgroundColor: [
+                                        'rgba(75, 192, 192, 0.2)',
+                                        ],
+                                        borderColor: [
+                                        'rgba(75, 192, 192, 1)',
+                                        ],
+                                        borderWidth: 1
+                                    }],
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'Amounts',
+                                        fontSize: 25,
+                                    },
+                                    legend: {
+                                        position: 'right',
+                                        fontColor: '#000',
+                                    }
+                                }
+                            });
                             //-------------------------------------MONTHLY INS REPORT----------------------------------------------
                             var monthlyIns = [];
+                            var monthlyPriceIns = [];
                             var monthlyInsMonths = [];
 
                             var requestMonthlyInsReport = $.ajax({
@@ -347,10 +512,11 @@ $(document).ready(function() {
                             requestMonthlyInsReport.done(function(response, textStatus, jqXHR) {
                                 var monthlyInsReport = JSON.parse(response);
                                 if (monthlyInsReport.length <= 0) {
-                                    $("#monthlyReportIns" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Ins for this stock yet.</div></div></div>');
+                                    $("#monthlyReportIns" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Purchase Orders for this stock yet.</div></div></div>');
                                 } else {
                                     $.each(monthlyInsReport, function(i, report) {
                                         monthlyIns.push(parseFloat(report.ins));
+                                        monthlyPriceIns.push(parseFloat(report.price_balance));
                                         monthlyInsMonths.push(report.month);
                                     });
                                     let myInsChart = document.getElementById("monthlyInsChart" + stock.id).getContext('2d');
@@ -359,7 +525,7 @@ $(document).ready(function() {
                                         data: {
                                             labels: monthlyInsMonths,
                                             datasets: [{
-                                                label: "Monthly Ins (" + stock.unit + ")",
+                                                label: "Monthly Purchase Orders (" + stock.unit + ")",
                                                 data: monthlyIns,
                                                 backgroundColor: [
                                                 'rgba(255, 99, 132, 0.2)',
@@ -395,7 +561,7 @@ $(document).ready(function() {
                                         options: {
                                             title: {
                                                 display: true,
-                                                text: 'Monthly Ins This Year',
+                                                text: 'Monthly Purchase Orders this year',
                                                 fontSize: 25,
                                             },
                                             legend: {
@@ -405,6 +571,35 @@ $(document).ready(function() {
                                         }
                                     });
                                 }
+                                let myPriceInsChart = document.getElementById("monthlyPriceInsChart" + stock.id).getContext('2d');
+                                let monthlyPriceInsChart = new Chart(myPriceInsChart, {
+                                    type: 'line',
+                                    data: {
+                                        labels: monthlyInsMonths,
+                                        datasets: [{
+                                            label: "Amount (₱)",
+                                            data: monthlyPriceIns,
+                                            backgroundColor: [
+                                            'rgba(75, 192, 192, 0.2)',
+                                            ],
+                                            borderColor: [
+                                            'rgba(75, 192, 192, 1)',
+                                            ],
+                                            borderWidth: 1
+                                        }],
+                                    },
+                                    options: {
+                                        title: {
+                                            display: true,
+                                            text: 'Amount of Purchase Orders (₱)',
+                                            fontSize: 25,
+                                        },
+                                        legend: {
+                                            position: 'right',
+                                            fontColor: '#000',
+                                        }
+                                    }
+                                });
                             });
                             requestMonthlyInsReport.fail(function(jqXHR, textStatus, errorThrown) {
                                 $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
@@ -412,6 +607,7 @@ $(document).ready(function() {
                             //-----------------------------------------------------------------------------------------------------
                             //--------------------------------------MONTHLY OUTS REPORT--------------------------------------------
                             var monthlyOuts = [];
+                            var monthlyPriceOuts = [];
                             var monthlyOutsMonths = [];
 
                             var requestMonthlyOutsReport = $.ajax({
@@ -424,10 +620,11 @@ $(document).ready(function() {
                             requestMonthlyOutsReport.done(function(response, textStatus, jqXHR) {
                                 var monthlyOutsReport = JSON.parse(response);
                                 if (monthlyOutsReport.length <= 0) {
-                                    $("#monthlyReportOuts" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Outs for this stock yet.</div></div></div>');
+                                    $("#monthlyReportOuts" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Deliveries for this stock yet.</div></div></div>');
                                 } else {
                                     $.each(monthlyOutsReport, function(i, report) {
                                         monthlyOuts.push(parseFloat(report.outs));
+                                        monthlyPriceOuts.push(parseFloat(report.price_balance));
                                         monthlyOutsMonths.push(report.month);
                                     });
                                     let myOutsChart = document.getElementById("monthlyOutsChart" + stock.id).getContext('2d');
@@ -436,7 +633,7 @@ $(document).ready(function() {
                                         data: {
                                             labels: monthlyOutsMonths,
                                             datasets: [{
-                                                label: "Monthly Outs (" + stock.unit + ")",
+                                                label: "Monthly Deliveries (" + stock.unit + ")",
                                                 data: monthlyOuts,
                                                 backgroundColor: [
                                                 'rgba(255, 99, 132, 0.2)',
@@ -472,7 +669,36 @@ $(document).ready(function() {
                                         options: {
                                             title: {
                                                 display: true,
-                                                text: 'Monthly Outs This Year',
+                                                text: 'Monthly Deliveries this year',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                    let myPriceOutsChart = document.getElementById("monthlyPriceOutsChart" + stock.id).getContext('2d');
+                                    let monthlyPriceOutsChart = new Chart(myPriceOutsChart, {
+                                        type: 'line',
+                                        data: {
+                                            labels: monthlyOutsMonths,
+                                            datasets: [{
+                                                label: "Amount (₱)",
+                                                data: monthlyPriceOuts,
+                                                backgroundColor: [
+                                                'rgba(75, 192, 192, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(75, 192, 192, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Amount of Deliveries (₱)',
                                                 fontSize: 25,
                                             },
                                             legend: {
@@ -487,13 +713,368 @@ $(document).ready(function() {
                                 $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                             });
                             //-----------------------------------------------------------------------------------------------------
+                            //--------------------------------------MONTHLY OUTS UST REPORT----------------------------------------
+                            var monthlyOutsUST = [];
+                            var monthlyPriceOutsUST = [];
+                            var monthlyOutsMonthsUST = [];
+
+                            var requestMonthlyOutsUSTReport = $.ajax({
+                                url: '../../controllers/admin/MonthlyReportOutsUST.php',
+                                type: 'POST',
+                                data: {
+                                    stock_id: stock.id,
+                                },
+                            });
+                            requestMonthlyOutsUSTReport.done(function(response, textStatus, jqXHR) {
+                                var monthlyOutsReport = JSON.parse(response);
+                                if (monthlyOutsReport.length <= 0) {
+                                    $("#monthlyReportOutsUST" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Deliveries to UST Branch for this stock yet.</div></div></div>');
+                                } else {
+                                    $.each(monthlyOutsReport, function(i, report) {
+                                        monthlyOutsUST.push(parseFloat(report.outs));
+                                        monthlyPriceOutsUST.push(parseFloat(report.price_balance));
+                                        monthlyOutsMonthsUST.push(report.month);
+                                    });
+                                    let myOutsUSTChart = document.getElementById("monthlyOutsUSTChart" + stock.id).getContext('2d');
+                                    let monthlyOutsUSTChart = new Chart(myOutsUSTChart, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: monthlyOutsMonthsUST,
+                                            datasets: [{
+                                                label: "Monthly Deliveries (" + stock.unit + ")",
+                                                data: monthlyOutsUST,
+                                                backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Monthly Deliveries to UST Branch this year',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                    let myPriceOutsUSTChart = document.getElementById("monthlyPriceOutsUSTChart" + stock.id).getContext('2d');
+                                    let monthlyPriceOutsUSTChart = new Chart(myPriceOutsUSTChart, {
+                                        type: 'line',
+                                        data: {
+                                            labels: monthlyOutsMonthsUST,
+                                            datasets: [{
+                                                label: "Amount (₱)",
+                                                data: monthlyPriceOutsUST,
+                                                backgroundColor: [
+                                                'rgba(75, 192, 192, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(75, 192, 192, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Amount of Deliveries to UST Branch (₱)',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            requestMonthlyOutsUSTReport.fail(function(jqXHR, textStatus, errorThrown) {
+                                $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                            });
+                            //-----------------------------------------------------------------------------------------------------
+                            //--------------------------------------MONTHLY OUTS UST REPORT----------------------------------------
+                            var monthlyOutsDLSU = [];
+                            var monthlyPriceOutsDLSU = [];
+                            var monthlyOutsMonthsDLSU = [];
+
+                            var requestMonthlyOutsDLSUReport = $.ajax({
+                                url: '../../controllers/admin/MonthlyReportOutsDLSU.php',
+                                type: 'POST',
+                                data: {
+                                    stock_id: stock.id,
+                                },
+                            });
+                            requestMonthlyOutsDLSUReport.done(function(response, textStatus, jqXHR) {
+                                var monthlyOutsReport = JSON.parse(response);
+                                if (monthlyOutsReport.length <= 0) {
+                                    $("#monthlyReportOutsDLSU" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Deliveries to DLSU Branch for this stock yet.</div></div></div>');
+                                } else {
+                                    $.each(monthlyOutsReport, function(i, report) {
+                                        monthlyOutsDLSU.push(parseFloat(report.outs));
+                                        monthlyPriceOutsDLSU.push(parseFloat(report.price_balance));
+                                        monthlyOutsMonthsDLSU.push(report.month);
+                                    });
+                                    let myOutsDLSUChart = document.getElementById("monthlyOutsDLSUChart" + stock.id).getContext('2d');
+                                    let monthlyOutsDLSUChart = new Chart(myOutsDLSUChart, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: monthlyOutsMonthsDLSU,
+                                            datasets: [{
+                                                label: "Monthly Deliveries (" + stock.unit + ")",
+                                                data: monthlyOutsDLSU,
+                                                backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                'rgba(255,99,132,1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Monthly Deliveries to UST Branch this year',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                    let myPriceOutsDLSUChart = document.getElementById("monthlyPriceOutsDLSUChart" + stock.id).getContext('2d');
+                                    let monthlyPriceOutsDLSUChart = new Chart(myPriceOutsDLSUChart, {
+                                        type: 'line',
+                                        data: {
+                                            labels: monthlyOutsMonthsDLSU,
+                                            datasets: [{
+                                                label: "Amount (₱)",
+                                                data: monthlyPriceOutsDLSU,
+                                                backgroundColor: [
+                                                'rgba(75, 192, 192, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                'rgba(75, 192, 192, 1)',
+                                                ],
+                                                borderWidth: 1
+                                            }],
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: 'Amount of Deliveries to UST Branch (₱)',
+                                                fontSize: 25,
+                                            },
+                                            legend: {
+                                                position: 'right',
+                                                fontColor: '#000',
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            requestMonthlyOutsDLSUReport.fail(function(jqXHR, textStatus, errorThrown) {
+                                $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                            });
+                            //-----------------------------------------------------------------------------------------------------
                         }
                     });
                     requestMonthlyBalanceReport.fail(function(jqXHR, textStatus, errorThrown) {
                         $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                     //-------------------------------------------------------------------------------------------------------------
-            	});
+                    //---------------------------------------------SPOILAGES-------------------------------------------------------
+                    var stock_spoilage = {
+                        stock_id: stock.id,
+                    };
+                    getThisSpoilage(stock_spoilage);
+                    function getThisSpoilage(stock_spoilage) {
+                        var spoilagesTotal = 0;
+                        var requestSpoilagesHistory = $.ajax({
+                            url: '../../controllers/admin/Spoilages.php',
+                            type: 'POST',
+                            data: stock_spoilage,
+                        });
+                        requestSpoilagesHistory.done(function(response, textStatus, jqXHR) {
+                            var spoilages = JSON.parse(response);
+                            if (spoilages.length === 0) {
+                                $("#spoilagesList"+ stock.id).empty().append('<div class="alert alert-info">There are no spoilages for this month yet.</div>');
+                            } else {
+                                $("#spoilagesList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Reference Code</th> <th>Spoilages</th> <th>Remaining</th> <th>Cost</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
+                                var $spoilagesRows = $("#spoilagesList"+ stock.id).find('tbody');
+                                $.each(spoilages, function(i, spoilage) {
+                                    spoilagesTotal += spoilage.amount;
+                                    $spoilagesRows.append('<tr><td>' + spoilage.date + '</td><td>' + spoilage.time + '</td><td>' + spoilage.supplier_reference + '</td><td>' + spoilage.amount + " " + stock.unit + '</td><td>' + spoilage.balance + " " + stock.unit + '</td><td>₱' + spoilage.price_balance + '</td><td>' + spoilage.issued_by + '</td></tr>');
+                                });
+                                $("#spoilagesTotal"+stock.id).text(spoilagesTotal + " " + stock.unit +" (₱" + (spoilagesTotal * stock.price) + ")");
+                            }
+                        });
+                        requestSpoilagesHistory.fail(function(jqXHR, textStatus, errorThrown) {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                        });                        
+                    }
+                    //-------------------------------------------MONTHLY SPOILAGES REPORT------------------------------------------
+                    var monthlySpoilages = [];
+                    var monthlyPriceSpoilages = [];
+                    var monthlySpoilagesMonths = [];
+
+                    var requestMonthlySpoilagesReport = $.ajax({
+                        url: '../../controllers/admin/MonthlyReportSpoilages.php',
+                        type: 'POST',
+                        data: {
+                            stock_id: stock.id,
+                        },
+                    });
+                    requestMonthlySpoilagesReport.done(function(response, textStatus, jqXHR) {
+                        var monthlySpoilagesReport = JSON.parse(response);
+                        if (monthlySpoilagesReport.length <= 0) {
+                            $("#spoilagesChart" + stock.id).empty().append('<div class="row m-t-35"><div class="col-12"><div class="alert alert-info">There are no Spoilages for this stock yet.</div></div></div>');
+                        } else {
+                            $("#spoilagesChart" + stock.id).empty().append('<div class="row m-t-35"> <div class="col-12" id="monthlySpoilagesBody' + stock.id + '"> <canvas id="monthlySpoilages' + stock.id + '"></canvas> </div></div><hr> <div class="row"> <div class="col-12" id="monthlyPriceSpoilagesBody' + stock.id + '"> <canvas id="monthlyPriceSpoilages' + stock.id + '"></canvas> </div></div>');
+                            $.each(monthlySpoilagesReport, function(i, report) {
+                                monthlySpoilages.push(parseFloat(report.spoilages));
+                                monthlyPriceSpoilages.push(parseFloat(report.price_balance));
+                                monthlySpoilagesMonths.push(report.month);
+                            });
+                            let mySpoilagesChart = document.getElementById("monthlySpoilages" + stock.id).getContext('2d');
+                            let monthlySpoilagesChart = new Chart(mySpoilagesChart, {
+                                type: 'bar',
+                                data: {
+                                    labels: monthlySpoilagesMonths,
+                                    datasets: [{
+                                        label: "Monthly Spoilages (" + stock.unit + ")",
+                                        data: monthlySpoilages,
+                                        backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)',
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)',
+                                        ],
+                                        borderColor: [
+                                        'rgba(255,99,132,1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)',
+                                        'rgba(255,99,132,1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)',
+                                        ],
+                                        borderWidth: 1
+                                    }],
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'Monthly Spoilages this year',
+                                        fontSize: 25,
+                                    },
+                                    legend: {
+                                        position: 'right',
+                                        fontColor: '#000',
+                                    }
+                                }
+                            });
+                            let myPriceSpoilagesChart = document.getElementById("monthlyPriceSpoilages" + stock.id).getContext('2d');
+                            let monthlyPriceSpoilagesChart = new Chart(myPriceSpoilagesChart, {
+                                type: 'line',
+                                data: {
+                                    labels: monthlySpoilagesMonths,
+                                    datasets: [{
+                                        label: "Amount (₱)",
+                                        data: monthlyPriceSpoilages,
+                                        backgroundColor: [
+                                        'rgba(75, 192, 192, 0.2)',
+                                        ],
+                                        borderColor: [
+                                        'rgba(75, 192, 192, 1)',
+                                        ],
+                                        borderWidth: 1
+                                    }],
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'Amount of Spoilages (₱)',
+                                        fontSize: 25,
+                                    },
+                                    legend: {
+                                        position: 'right',
+                                        fontColor: '#000',
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    requestMonthlySpoilagesReport.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                    });
+                    //-------------------------------------------------------------------------------------------------------------
+                });
                 //-----------------------------------------ADD PARTICULAR SUBMIT --------------------------------------------------
                 $(".addParticularForm").on('submit', function(e) {
                     e.preventDefault();
@@ -504,10 +1085,8 @@ $(document).ready(function() {
                         type: 'POST',
                         data: {
                             stock_id: $thisAddParticularForm.find("input[name='stock_id']").val(),
-                            type: $thisAddParticularForm.find("input[name='type']").val(),
-                            supplier_reference: $thisAddParticularForm.find("input[name='supplier_reference']").val(),
-                            in: $thisAddParticularForm.find("input[name='in']").val(),
-                            out: $thisAddParticularForm.find("input[name='out']").val(),
+                            type: $thisAddParticularForm.find("select[name='type']").val(),
+                            amount: $thisAddParticularForm.find("input[name='amount']").val(),
                         },
                     });
                     requestAddParticular.done(function(response, textStatus, jqXHR) {
@@ -528,6 +1107,95 @@ $(document).ready(function() {
                         $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                     
+                });
+                //-----------------------------------------------------------------------------------------------------------------
+                //-----------------------------------------ADD SPOILAGE SUBMIT --------------------------------------------------
+                $(".addSpoilageForm").on('submit', function(e) {
+                    e.preventDefault();
+                    var $thisAddSpoilageForm = $(this);
+                    var $modal = $(this).closest('.modal');
+                    var requestAddSpoilage = $.ajax({
+                        url: $thisAddSpoilageForm.attr("action"),
+                        type: 'POST',
+                        data: {
+                            stock_id: $thisAddSpoilageForm.find("input[name='stock_id']").val(),
+                            quantity: $thisAddSpoilageForm.find("input[name='quantity']").val(),
+                        },
+                    });
+                    requestAddSpoilage.done(function(response, textStatus, jqXHR) {
+                        if (response === "ok") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Add spoilage issue successful!").delay( 5000 ).slideUp(300);
+                            $modal.modal('toggle');
+                            $('body').removeClass('modal-open');
+                            $('.modal-backdrop').remove();
+                            $('body').css('padding-right',0);
+                            getMainInventory(data);
+                        } else if (response === "qty<out") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("You have insufficient amount of quantity on this stock.").delay( 5000 ).slideUp(300);    
+                        } else if (response === "err") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error adding particular. Check inputs again.").delay( 5000 ).slideUp(300);
+                        }
+                    });
+                    requestAddSpoilage.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                    });
+                });
+                //-----------------------------------------------------------------------------------------------------------------
+                //-----------------------------------------UPDATE PRICE -----------------------------------------------------------
+                $(".changeStockPrice").on('submit', function(e) {
+                    e.preventDefault();
+                    var $thisChangeStockPriceForm = $(this);
+                    var $modal = $(this).closest('.modal');
+                    var requestChangeStockPrice = $.ajax({
+                        url: $thisChangeStockPriceForm.attr("action"),
+                        type: 'POST',
+                        data: {
+                            stock_id: $thisChangeStockPriceForm.find("input[name='stock_id']").val(),
+                            stock_price: $thisChangeStockPriceForm.find("input[name='stock_price']").val(),
+                        },
+                    });
+                    requestChangeStockPrice.done(function(response, textStatus, jqXHR) {
+                        if (response === "ok") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Change stock price successful!").delay( 5000 ).slideUp(300);
+                            $modal.modal('toggle');
+                            $('body').removeClass('modal-open');
+                            $('.modal-backdrop').remove();
+                            $('body').css('padding-right',0);
+                            getMainInventory(data);
+                        }
+                    });
+                    requestChangeStockPrice.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                    });
+                });
+                //-----------------------------------------------------------------------------------------------------------------
+                //-----------------------------------------UPDATE SUPPLIER --------------------------------------------------------
+                $(".changeStockSupplier").on('submit', function(e) {
+                    e.preventDefault();
+                    var $thisChangeStockSupplierForm = $(this);
+                    var $modal = $(this).closest('.modal');
+                    var requestChangeStockSupplier = $.ajax({
+                        url: $thisChangeStockSupplierForm.attr("action"),
+                        type: 'POST',
+                        data: {
+                            stock_id: $thisChangeStockSupplierForm.find("input[name='stock_id']").val(),
+                            supplier: $thisChangeStockSupplierForm.find("input[name='supplier']").val(),
+                            supplier_location: $thisChangeStockSupplierForm.find("input[name='supplier_location']").val(),
+                        },
+                    });
+                    requestChangeStockSupplier.done(function(response, textStatus, jqXHR) {
+                        if (response === "ok") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update stock supplier details successful!").delay( 5000 ).slideUp(300);
+                            $modal.modal('toggle');
+                            $('body').removeClass('modal-open');
+                            $('.modal-backdrop').remove();
+                            $('body').css('padding-right',0);
+                            getMainInventory(data);
+                        }
+                    });
+                    requestChangeStockSupplier.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                    });
                 });
                 //-----------------------------------------------------------------------------------------------------------------
             }

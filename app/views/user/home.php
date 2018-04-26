@@ -10,7 +10,6 @@ if (isset($_SESSION['user'])) {
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +52,7 @@ if (isset($_SESSION['user'])) {
 					<div class="col-3">
 						<select name="type" id="type" class="form-control">
 							<option value="name">Stock name/brand</option>
+							<option value="category">Category</option>
 							<option value="status">Status</option>
 							<option value="unit">Unit</option>
 						</select>
@@ -188,104 +188,5 @@ if (isset($_SESSION['user'])) {
 	<script src="../../assets/js/user/inventory.js"></script>
 	<script src="../../assets/js/user/user.js"></script>
 <!--===============================================================================================-->
-
-  	<?php
-  		if (isset($_SESSION['update'])) {
-  			if ($_SESSION['update'] === "ok") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-success").show().append("Update item successful!").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			} else if ($_SESSION['update'] === "err") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-info").show().append("No changes for item.").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			}
-			unset($_SESSION['update']);
-  		}
-  		if (isset($_SESSION['add'])) {
-  			if ($_SESSION['add'] === "ok") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-success").show().append("Add item successful!").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			} else if ($_SESSION['add'] === "err") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error adding desired item.").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			}
-			unset($_SESSION['add']);
-  		}
-  		if (isset($_SESSION['destroy'])) {
-  			if ($_SESSION['destroy'] === "ok") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-success").show().append("Delete item successful!").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			} else if ($_SESSION['destroy'] === "err") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error deleting desired item.").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			}
-			unset($_SESSION['destroy']);
-  		}
-  		if (isset($_SESSION['addUser'])) {
-  			if ($_SESSION['addUser'] === "ok") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-success").show().append("Add user successful!").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			} else if ($_SESSION['addUser'] === "username") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			}  else if ($_SESSION['addUser'] === "email") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			} else if ($_SESSION['addUser'] === "err") {
-  	?>
-			<script>
-				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error adding user.").delay( 5000 ).slideUp(300);	
-				});
-			</script>
-  	<?php
-  			}
-			unset($_SESSION['addUser']);
-  		}
-  	?>
 </body>
 </html>
