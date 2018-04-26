@@ -4,6 +4,9 @@ $(document).ready(function() {
     var currentPage;
     var totalPages;
 
+    var sortBy = "name";
+    var step = "ASC";
+
     var data = {
         type: $("#type").val(),
         keyword: $("#searchKeyword").val(),
@@ -46,6 +49,8 @@ $(document).ready(function() {
                     type: $("#type").val(),
                     keyword: $("#searchKeyword").val(),
                     page: currentPage,
+                    orderby: sortBy,
+                    step: step,
                 };
                 getMainInventory(data);
                 if (currentPage === 1) {
@@ -62,6 +67,8 @@ $(document).ready(function() {
                     type: $("#type").val(),
                     keyword: $("#searchKeyword").val(),
                     page: currentPage,
+                    orderby: sortBy,
+                    step: step,
                 };
                 getMainInventory(data);
                 if (currentPage === totalPages) {
@@ -75,6 +82,8 @@ $(document).ready(function() {
                     type: $("#type").val(),
                     keyword: $("#searchKeyword").val(),
                     page: currentPage,
+                    orderby: sortBy,
+                    step: step,
                 };
                 getMainInventory(data);
                 if (currentPage === 1) {
@@ -139,10 +148,130 @@ $(document).ready(function() {
                 $("#stockModals").empty();
             } else {
                 $("#stockModals").empty();
-            	$("#stockList").empty().append('<table class="table table-hover"><thead class="thead-dark"><tr><th>Name/Brand</th><th>Category</th><th>Quantity</th><th>Unit</th><th>Status</th></tr></thead><tbody></tbody></table>');
+            	$("#stockList").empty().append('<table class="table table-hover"> <thead class="thead-dark"> <tr> <th class="sortBy ' + (sortBy==="name" ? "sorted" : "") + '">Name/Brand ' + (sortBy==="name" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="name" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="category" ? "sorted" : "") + '">Category ' + (sortBy==="category" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="category" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="current_qty" ? "sorted" : "") + '">Quantity ' + (sortBy==="current_qty" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="current_qty" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="unit" ? "sorted" : "") + '">Unit ' + (sortBy==="unit" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="unit" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="price" ? "sorted" : "") + '">Price ' + (sortBy==="price" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="price" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> <th class="sortBy ' + (sortBy==="status" ? "sorted" : "") + '">Status ' + (sortBy==="status" && step==="ASC" ? "<span class=\"fa fa-caret-down\"></span>" : (sortBy==="status" && step==="DESC" ? ("<span class=\"fa fa-caret-up\"></span>") : "")) + '</th> </tr></thead> <tbody> </tbody></table>');
+                $(".sortBy").on('click', function() {
+                    var text = $.trim($(this).text());
+                    var sorted = $.trim($("#stockList").find(".sorted").text());
+
+                    if (text === "Name/Brand") {
+                        sortBy = "name";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Category") {
+                        sortBy = "category";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Quantity") {
+                        sortBy = "current_qty";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Unit") {
+                        sortBy = "unit";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Price") {
+                        sortBy = "price";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    } else if (text === "Status") {
+                        sortBy = "status";
+                        if (text === sorted) {
+                            if (step === "ASC") {
+                                step = "DESC";
+                            } else if (step === "DESC") {
+                                step = "ASC";
+                            }
+                        } else {
+                            step = "ASC";
+                        }
+                        data = {
+                            type: $("#type").val(),
+                            keyword: $("#searchKeyword").val(),
+                            page: currentPage,
+                            orderby: sortBy,
+                            step: step,
+                        };
+                        getMainInventory(data);
+                    }
+                });
             	$stockRows = $("#stockList").find('tbody');
             	$.each(stocks, function(i, stock) {
-                    $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.category + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td></tr>');
+                    $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.category + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td>₱' + stock.price + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td></tr>');
                     $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">Stock Overview</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilages' + stock.id + '"><span class="fa fa-trash"></span> Spoilages Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#delete-stock' + stock.id + '"><span class="fa fa-times"></span> Delete Stock</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <p>Supplier: ' + stock.supplier + '</p><p>Supplier: ' + stock.supplier_location + '</p>' + ((stock.last_supplier_changed) ? "<p>(Supplier details was updated at: " + stock.last_supplier_changed + ")</p>" : "") + ' </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + " " + stock.unit + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Purchase Orders this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Deliveries this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Spoilages this month:</small> <h5 id="spoilagesTotal' + stock.id + '"></h5> </div></div><hr> <form action="../../controllers/admin/EditStockPrice.php" method="post" class="changeStockPrice"> <div class="row"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="col-3"> <h6 class="align-items-center">Change Price to (₱):</h6> </div><div class="col-6"> <input type="number" step="any" min="0.0001" name="stock_price" class="form-control" required> </div><div class="col-3"> <button type="submit" class="btn btn-success btn-block">Change Price</button> </div></div></form> <hr> <form action="../../controllers/admin/EditStockSupplier.php" method="post" class="changeStockSupplier"> <div class="row"> <div class="col-6"> <h6>Update supplier details</h6> </div></div><div class="row m-t-35"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="col-6"> <small>Supplier: <span class="text-danger">*</span></small> <input type="text" name="supplier" class="form-control" required> </div><div class="col-6"> <small>Supplier Location: <span class="text-danger">*</span></small> <input type="text" name="supplier_location" class="form-control" required> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Update Supplier Details</button> </div></div></form> </div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h4>' + stock.name + '</h4> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <select name="type" class="form-control" required> <option value="Delivery to UST Branch">Delivery to UST Branch</option> <option value="Delivery to De La Salle Branch">Delivery to De La Salle Branch</option> <option value="Purchase Order">Purchase Order</option> </select> </div><div class="col-6"> <small>Amount: <span class="text-danger">*</span></small> <input type="number" step="any" min="0.0001" name="amount" class="form-control" required> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container-fluid" id="spoilages' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <h6>Legend:</h6> <p><small>SP: Spoilage Issue</small></p></div></div><hr> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#spoilagesSummary' + stock.id + '">Detailed spoilage summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilagesChart' + stock.id + '">Spoilages report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add_spoilage' + stock.id + '">Add spoilage issue</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active" id="spoilagesSummary' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="spoilagesList' + stock.id + '"></div></div></div><div class="tab-pane fade" id="spoilagesChart' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="monthlySpoilagesBody' + stock.id + '"> <canvas id="monthlySpoilages' + stock.id + '"></canvas> </div></div><hr> <div class="row"> <div class="col-12" id="monthlyPriceSpoilagesBody' + stock.id + '"> <canvas id="monthlyPriceSpoilages' + stock.id + '"></canvas> </div></div></div><div class="tab-pane fade" id="add_spoilage' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h6>Add Spoilage Issue</h6> </div></div><form action="../../controllers/admin/AddSpoilage.php" method="post" class="addSpoilageForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <small>Quantity of spoiled product: <span class="text-danger">*</span></small> <input type="number" step="any" min="0.0001" name="quantity" class="form-control" required> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Submit</button> </div></div></form> </div></div></div><div class="tab-pane fade container" id="delete-stock' + stock.id + '"> <form action="../../controllers/admin/DeleteStock.php" method="post"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Delete Stock</h3> <small class="text-danger">Are you sure you want to delete this stock? All past transactions will be removed.</small> </div></div><hr> <div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-danger">Delete this stock</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
                     //------------------------------------------PAGINATION-------------------------------------------------------
                     var thisMonthCurrentPage = 1;

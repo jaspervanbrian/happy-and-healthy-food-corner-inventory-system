@@ -15,22 +15,22 @@ class Stock
     {
     	$this->connection = new Connection();    
     }
-    public function getInventory($type, $keyword='', $page)
+    public function getInventory($type, $keyword='', $page, $orderby, $step)
     {
     	$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     	if (trim($keyword) !== '') {
-			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY current_qty ASC, name ASC LIMIT :index , :upTo");
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
     		if ($type === "name") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY current_qty ASC, name ASC LIMIT :index , :upTo");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
     			$keyword =  "%".$keyword ."%";
     		} else if ($type === "category") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword ORDER BY current_qty ASC, name ASC LIMIT :index , :upTo");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "status") {
-    			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword ORDER BY current_qty ASC, name ASC LIMIT :index , :upTo");
+    			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
     			$keyword =  "%".$keyword ."%";
     		} else if ($type === "unit") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword ORDER BY current_qty ASC, name ASC LIMIT :index , :upTo");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
                 $keyword =  "%".$keyword ."%";
             }
 
@@ -49,7 +49,7 @@ class Stock
 				return $stockList;
 			}
     	} else {
-    		$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks ORDER BY current_qty ASC, name ASC LIMIT :index , :upTo");
+    		$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
 
             $index = ($page - 1)*6;
             $upTo = 6;
@@ -70,18 +70,18 @@ class Stock
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         if (trim($keyword) !== '') {
-            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY current_qty ASC, name ASC");
+            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword");
             if ($type === "name") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY current_qty ASC, name ASC");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "category") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword ORDER BY current_qty ASC, name ASC");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "status") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword ORDER BY current_qty ASC, name ASC");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "unit") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword ORDER BY current_qty ASC, name ASC");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword");
                 $keyword =  "%".$keyword ."%";
             }
 
@@ -89,7 +89,7 @@ class Stock
             $stmt->execute();
             return $stmt->rowCount();
         } else {
-            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks ORDER BY current_qty ASC, name ASC");
+            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks");
             $stmt->execute();
             return $stmt->rowCount();
         }
