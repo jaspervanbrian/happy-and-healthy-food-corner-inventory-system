@@ -211,6 +211,91 @@ class Stock
         $stmt->execute();
         return true;
     }
+    public function updateDetails($stock_id, $name, $former_name, $unit, $category, $current_qty)
+    {
+        $status = "";
+        $current_qty = (float)$current_qty;
+        if ($category === "Meat") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 5) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 5 && $current_qty < 20) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 20) {
+                $status = "High Stock";
+            }
+        } else if ($category === "Vegetables") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 5) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 5 && $current_qty < 20) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 20) {
+                $status = "High Stock";
+            }
+        } else if ($category === "Packaging") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 1500) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 1500 && $current_qty < 3000) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 3000) {
+                $status = "High Stock";
+            }
+        } else if ($category === "Grocery") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 20) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 20 && $current_qty < 50) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 50) {
+                $status = "High Stock";
+            }
+        } else if ($category === "Rice") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 25) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 25 && $current_qty < 50) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 50) {
+                $status = "High Stock";
+            }
+        } else if ($category === "Sauce") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 2) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 2 && $current_qty < 4) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 4) {
+                $status = "High Stock";
+            }
+        } else if ($category === "Fruits") {
+            if ($current_qty <= 0) {
+                $status = "Out of stock";
+            } else if ($current_qty > 0 && $current_qty < 50) {
+                $status = "Needs Replenishment";
+            } else if ($current_qty >= 50 && $current_qty < 100) {
+                $status = "Low Stock";
+            } else if ($current_qty >= 100) {
+                $status = "High Stock";
+            }
+        }
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET name = :name, former_name = :former_name, unit = :unit, category = :category, status = :status WHERE id = :id");
+        $stmt->bindParam(":id", $stock_id);
+        $stmt->bindParam(":name", $name);
+        $stmt->bindParam(":former_name", $former_name);
+        $stmt->bindParam(":unit", $unit);
+        $stmt->bindParam(":category", $category);
+        $stmt->bindParam(":status", $status);
+        $stmt->execute();
+        return true;
+    }
     public function destroy($stock_id)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
