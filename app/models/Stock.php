@@ -15,8 +15,9 @@ class Stock
     {
     	$this->connection = new Connection();    
     }
-    public function getInventory($type, $keyword='', $page, $orderby, $step, $is_deleted = false)
+    public function getInventory($type, $keyword='', $page, $orderby, $step, $is_deleted)
     {
+        $is_deleted = (int)$is_deleted;
     	$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     	if (trim($keyword) !== '') {
 			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword AND is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
@@ -38,7 +39,7 @@ class Stock
             $upTo = 6;
             $stmt->bindParam(':index', $index, \PDO::PARAM_INT);
             $stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
-            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_INT);
 			$stmt->bindParam(':keyword', $keyword);
 			$stmt->execute();
 
@@ -56,7 +57,7 @@ class Stock
             $upTo = 6;
             $stmt->bindParam(':index', $index, \PDO::PARAM_INT);
             $stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
-            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_INT);
 
 			$stmt->execute();
 			if ($stmt->rowCount() <= 0) {
@@ -68,8 +69,9 @@ class Stock
 			}
     	}
     }
-    public function getInventoryPages($type, $keyword='', $is_deleted = false)
+    public function getInventoryPages($type, $keyword='', $is_deleted)
     {
+        $is_deleted = (int)$is_deleted;
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         if (trim($keyword) !== '') {
             $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword AND is_deleted = :is_deleted");
@@ -88,12 +90,12 @@ class Stock
             }
 
             $stmt->bindParam(':keyword', $keyword);
-            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->rowCount();
         } else {
             $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE is_deleted = :is_deleted");
-            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->rowCount();
         }
@@ -186,7 +188,8 @@ class Stock
             }
         }
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, supplier, supplier_location, status) VALUES (:name, :category, :unit, :current_qty, :price, :supplier, :supplier_location, :status)");
+        $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, supplier, supplier_location, status, is_deleted) VALUES (:name, :category, :unit, :current_qty, :price, :supplier, :supplier_location, :status, :is_deleted)");
+        $is_deleted = 0;
         $stmt->bindParam(":name", $name);
         $stmt->bindParam(":category", $category);
         $stmt->bindParam(":unit", $unit);
@@ -195,6 +198,7 @@ class Stock
         $stmt->bindParam(":supplier", $supplier);
         $stmt->bindParam(":supplier_location", $supplier_location);
         $stmt->bindParam(":status", $status);
+        $stmt->bindParam(":is_deleted", $is_deleted, \PDO::PARAM_INT);
         $stmt->execute();
         return true;
     }
@@ -305,8 +309,8 @@ class Stock
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET is_deleted = :deleted WHERE id = :stock_id");
         // DELETE FROM stocks WHERE id = :stock_id
-        $deleted = true;
-        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_BOOL);
+        $deleted = 1;
+        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_INT);
         $stmt->bindParam(":stock_id", $stock_id);
         $stmt->execute();
         return true;
@@ -316,8 +320,8 @@ class Stock
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET is_deleted = :deleted WHERE id = :stock_id");
         // DELETE FROM stocks WHERE id = :stock_id
-        $deleted = false;
-        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_BOOL);
+        $deleted = 0;
+        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_INT);
         $stmt->bindParam(":stock_id", $stock_id);
         $stmt->execute();
         return true;

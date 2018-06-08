@@ -9,4 +9,4 @@ use App\Models\Stock;
 
 $stocks = new Stock();
 
-echo $stocks->getInventoryPages($_POST['type'], $_POST['keyword']);
+echo $stocks->getInventoryPages($_POST['type'], $_POST['keyword'], $_POST['is_deleted']);

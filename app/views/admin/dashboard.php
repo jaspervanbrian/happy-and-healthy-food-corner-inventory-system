@@ -46,7 +46,7 @@ if (isset($_SESSION['user'])) {
 			<a class="nav-link" id="users-tab" data-toggle="tab" href="#users"><h5><span class="fa fa-users"></span> Users</h5></a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link active" id="archives-tab" data-toggle="tab" href="#archives"><h5><span class="fa fa-archive"></span> Archives</h5></a>
+			<a class="nav-link" id="archives-tab" data-toggle="tab" href="#archives"><h5><span class="fa fa-archive"></span> Archives</h5></a>
 		</li>
 	</ul>
 
@@ -448,11 +448,31 @@ if (isset($_SESSION['user'])) {
   	?>
 			<script>
 				$(document).ready(function() {
-					$("#flash-message").empty().addClass("alert alert-success").show().append("Delete item successful!").delay( 5000 ).slideUp(300);	
+					$("#flash-message").empty().addClass("alert alert-success").show().append("Archive item successful!").delay( 5000 ).slideUp(300);	
 				});
 			</script>
   	<?php
   			} else if ($_SESSION['destroy'] === "err") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error archiving desired item.").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			}
+			unset($_SESSION['destroy']);
+  		}
+  		if (isset($_SESSION['delete'])) {
+  			if ($_SESSION['delete'] === "ok") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-success").show().append("Delete item successful!").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			} else if ($_SESSION['delete'] === "err") {
   	?>
 			<script>
 				$(document).ready(function() {
@@ -461,7 +481,27 @@ if (isset($_SESSION['user'])) {
 			</script>
   	<?php
   			}
-			unset($_SESSION['destroy']);
+			unset($_SESSION['delete']);
+  		}
+  		if (isset($_SESSION['recover'])) {
+  			if ($_SESSION['recover'] === "ok") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-success").show().append("Recover item successful!").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			} else if ($_SESSION['recover'] === "err") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error recovering desired item.").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			}
+			unset($_SESSION['recover']);
   		}
   		if (isset($_SESSION['addUser'])) {
   			if ($_SESSION['addUser'] === "ok") {
