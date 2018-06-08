@@ -15,22 +15,22 @@ class Stock
     {
     	$this->connection = new Connection();    
     }
-    public function getInventory($type, $keyword='', $page, $orderby, $step)
+    public function getInventory($type, $keyword='', $page, $orderby, $step, $is_deleted = false)
     {
     	$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     	if (trim($keyword) !== '') {
-			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword AND is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
     		if ($type === "name") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword AND is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
     			$keyword =  "%".$keyword ."%";
     		} else if ($type === "category") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword AND is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "status") {
-    			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
+    			$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword AND is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
     			$keyword =  "%".$keyword ."%";
     		} else if ($type === "unit") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword AND is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
                 $keyword =  "%".$keyword ."%";
             }
 
@@ -38,6 +38,7 @@ class Stock
             $upTo = 6;
             $stmt->bindParam(':index', $index, \PDO::PARAM_INT);
             $stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
 			$stmt->bindParam(':keyword', $keyword);
 			$stmt->execute();
 
@@ -49,12 +50,13 @@ class Stock
 				return $stockList;
 			}
     	} else {
-    		$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
+    		$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE is_deleted = :is_deleted ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
 
             $index = ($page - 1)*6;
             $upTo = 6;
             $stmt->bindParam(':index', $index, \PDO::PARAM_INT);
             $stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
 
 			$stmt->execute();
 			if ($stmt->rowCount() <= 0) {
@@ -66,30 +68,32 @@ class Stock
 			}
     	}
     }
-    public function getInventoryPages($type, $keyword='')
+    public function getInventoryPages($type, $keyword='', $is_deleted = false)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         if (trim($keyword) !== '') {
-            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword");
+            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword AND is_deleted = :is_deleted");
             if ($type === "name") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE name LIKE :keyword AND is_deleted = :is_deleted");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "category") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE category LIKE :keyword AND is_deleted = :is_deleted");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "status") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE status LIKE :keyword AND is_deleted = :is_deleted");
                 $keyword =  "%".$keyword ."%";
             } else if ($type === "unit") {
-                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword");
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE unit LIKE :keyword AND is_deleted = :is_deleted");
                 $keyword =  "%".$keyword ."%";
             }
 
             $stmt->bindParam(':keyword', $keyword);
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
             $stmt->execute();
             return $stmt->rowCount();
         } else {
-            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks");
+            $stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE is_deleted = :is_deleted");
+            $stmt->bindParam(':is_deleted', $is_deleted, \PDO::PARAM_BOOL);
             $stmt->execute();
             return $stmt->rowCount();
         }
@@ -297,6 +301,28 @@ class Stock
         return true;
     }
     public function destroy($stock_id)
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET is_deleted = :deleted WHERE id = :stock_id");
+        // DELETE FROM stocks WHERE id = :stock_id
+        $deleted = true;
+        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_BOOL);
+        $stmt->bindParam(":stock_id", $stock_id);
+        $stmt->execute();
+        return true;
+    }
+    public function recover($stock_id)
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET is_deleted = :deleted WHERE id = :stock_id");
+        // DELETE FROM stocks WHERE id = :stock_id
+        $deleted = false;
+        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_BOOL);
+        $stmt->bindParam(":stock_id", $stock_id);
+        $stmt->execute();
+        return true;
+    }
+    public function delete($stock_id)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $stmt = $this->connection->db_connection->prepare("DELETE FROM stocks WHERE id = :stock_id");

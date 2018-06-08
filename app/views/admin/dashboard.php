@@ -45,6 +45,9 @@ if (isset($_SESSION['user'])) {
 		<li class="nav-item">
 			<a class="nav-link" id="users-tab" data-toggle="tab" href="#users"><h5><span class="fa fa-users"></span> Users</h5></a>
 		</li>
+		<li class="nav-item">
+			<a class="nav-link active" id="archives-tab" data-toggle="tab" href="#archives"><h5><span class="fa fa-archive"></span> Archives</h5></a>
+		</li>
 	</ul>
 
 	<div class="tab-content">
@@ -121,6 +124,9 @@ if (isset($_SESSION['user'])) {
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="tab-pane container fade" id="archives">
+			
 		</div>
 	</div>
 
