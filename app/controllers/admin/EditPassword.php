@@ -9,9 +9,11 @@ use App\Models\User;
 
 $user = new User();
 
-if (isset($_POST['id']) && isset($_POST['password'])) {
-	$is_updated = $user->updatePassword($_POST['id'], $_POST['password']);
+if (isset($_SESSION['user']['id']) && isset($_POST['currentPassword']) && isset($_POST['password'])) {
+	$is_updated = $user->updatePassword($_SESSION['user']['id'], $_POST['currentPassword'], $_POST['password']);
 	if ($is_updated === true) {
 		echo "ok";
+	} else {
+		echo "err";
 	}
 }

@@ -48,9 +48,17 @@ class User
             return "usernameTaken";
         }
     }
-    public function updatePassword($id, $password)
+    public function updatePassword($id, $currentPassword, $password)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE password = :currentPassword AND id = :id");
+        $stmt->bindParam(":currentPassword", $currentPassword);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        if ($stmt->rowCount() <= 0) {
+            return false;
+        }
+
         $stmt = $this->connection->db_connection->prepare("UPDATE users SET password = :password WHERE id = :id");
         $stmt->bindParam(":password", $password);
         $stmt->bindParam(":id", $id);

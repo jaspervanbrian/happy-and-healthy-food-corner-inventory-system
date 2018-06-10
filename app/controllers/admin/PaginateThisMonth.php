@@ -9,4 +9,4 @@ use App\Models\Particular;
 
 $particulars = new Particular();
 
-echo $particulars->thisMonthParticularPages($_POST['stock_id']);
+echo $particulars->thisMonthParticularPages($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search']);

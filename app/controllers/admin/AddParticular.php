@@ -11,11 +11,10 @@ $particular = new Particular();
 
 if (isset($_POST['stock_id']) &&
 	isset($_POST['type']) &&
-	isset($_POST['in']) &&
-	isset($_POST['out']) &&
+	isset($_POST['qty']) &&
 	isset($_SESSION['user'])
 ) {
-	$is_added = $particular->create($_POST['stock_id'], $_POST['type'], $_POST['in'], $_POST['out'], $_SESSION['user']['id']);
+	$is_added = $particular->create($_POST['stock_id'], $_POST['type'], $_POST['qty'], $_SESSION['user']['id']);
 	if ($is_added === true) {
 		echo "ok";
 	} else {

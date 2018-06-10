@@ -15,37 +15,165 @@ class Particular
 	{
 		$this->connection = new Connection();    
 	}
-	public function thisMonthParticularPages($stock_id)
+	public function thisMonthParticularPages($stock_id, $type_search, $reference_keyword_search)
 	{
-		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND (type = 'Delivery to UST Branch' OR type = 'Delivery to De La Salle Branch' OR type = 'Purchase Order')");
-		$stmt->bindParam(":stock_id", $stock_id);
-		$stmt->execute();
-		return $stmt->rowCount();
-	}
-	public function thisMonthParticular($stock_id, $page)
-	{
-		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) ORDER BY date_time ASC LIMIT :index, :upTo");
-		$stmt->bindParam(":stock_id", $stock_id);
-		$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
-		$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
-        $index = ($page - 1)*10;
-        $upTo = 10;
-		$stmt->execute();
-		$particulars = $stmt->fetchAll();
-		foreach($particulars as &$particular) {
-			$stmt = $this->connection->db_connection->prepare("SELECT name FROM users WHERE id = :user_id LIMIT 1");
-			$stmt->bindParam(":user_id", $particular['user_id']);
+		$supplier_reference = "%" . $reference_keyword . "%";
+		if ($type_search === "All") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
 			$stmt->execute();
-			$user = $stmt->fetch();
-
-			$issue_date = date_create($particular['date_time']);
-			$particular['issued_by'] = $user['name'];
-			$particular['date'] = date_format($issue_date, 'F d, Y');
-			$particular['time'] = date_format($issue_date, 'g:i A');
+			return $stmt->rowCount();
+		} else if ($type_search === "Purchase Orders") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND type = 'Purchase Order'");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+			$stmt->execute();
+			return $stmt->rowCount();
+		} else if ($type_search === "Delivery") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND (type = 'Delivery to UST Branch' OR type = 'Delivery to De La Salle Branch')");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+			$stmt->execute();
+			return $stmt->rowCount();
+		} else if ($type_search === "Delivery to UST Branch") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND type = 'Delivery to UST Branch'");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+			$stmt->execute();
+			return $stmt->rowCount();
+		} else if ($type_search === "Delivery to De La Salle Branch") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND type = 'Delivery to De La Salle Branch'");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+			$stmt->execute();
+			return $stmt->rowCount();
 		}
-		return $particulars;
+	}
+	public function thisMonthParticular($stock_id, $type_search, $reference_keyword, $page)
+	{
+		$supplier_reference = "%" . $reference_keyword . "%";
+		if ($type_search === "All") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference ORDER BY date_time ASC LIMIT :index, :upTo");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
+			$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+	        $index = ($page - 1)*5;
+	        $upTo = 5;
+			$stmt->execute();
+			$particulars = $stmt->fetchAll();
+			foreach($particulars as &$particular) {
+				$stmt = $this->connection->db_connection->prepare("SELECT name FROM users WHERE id = :user_id LIMIT 1");
+				$stmt->bindParam(":user_id", $particular['user_id']);
+				$stmt->execute();
+				$user = $stmt->fetch();
+
+				$issue_date = date_create($particular['date_time']);
+				$particular['issued_by'] = $user['name'];
+				$particular['date'] = date_format($issue_date, 'F d, Y');
+				$particular['time'] = date_format($issue_date, 'g:i A');
+			}
+			return $particulars;
+		} else if ($type_search === "Purchase Order") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND type = 'Purchase Order' ORDER BY date_time ASC LIMIT :index, :upTo");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
+			$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+	        $index = ($page - 1)*5;
+	        $upTo = 5;
+			$stmt->execute();
+			$particulars = $stmt->fetchAll();
+			foreach($particulars as &$particular) {
+				$stmt = $this->connection->db_connection->prepare("SELECT name FROM users WHERE id = :user_id LIMIT 1");
+				$stmt->bindParam(":user_id", $particular['user_id']);
+				$stmt->execute();
+				$user = $stmt->fetch();
+
+				$issue_date = date_create($particular['date_time']);
+				$particular['issued_by'] = $user['name'];
+				$particular['date'] = date_format($issue_date, 'F d, Y');
+				$particular['time'] = date_format($issue_date, 'g:i A');
+			}
+			return $particulars;
+		} else if ($type_search === "Delivery") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND (type = 'Delivery to UST Branch' OR type = 'Delivery to De La Salle Branch') ORDER BY date_time ASC LIMIT :index, :upTo");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
+			$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+	        $index = ($page - 1)*5;
+	        $upTo = 5;
+			$stmt->execute();
+			$particulars = $stmt->fetchAll();
+			foreach($particulars as &$particular) {
+				$stmt = $this->connection->db_connection->prepare("SELECT name FROM users WHERE id = :user_id LIMIT 1");
+				$stmt->bindParam(":user_id", $particular['user_id']);
+				$stmt->execute();
+				$user = $stmt->fetch();
+
+				$issue_date = date_create($particular['date_time']);
+				$particular['issued_by'] = $user['name'];
+				$particular['date'] = date_format($issue_date, 'F d, Y');
+				$particular['time'] = date_format($issue_date, 'g:i A');
+			}
+			return $particulars;
+		} else if ($type_search === "Delivery to UST Branch") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND type = 'Delivery to UST Branch' ORDER BY date_time ASC LIMIT :index, :upTo");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
+			$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+	        $index = ($page - 1)*5;
+	        $upTo = 5;
+			$stmt->execute();
+			$particulars = $stmt->fetchAll();
+			foreach($particulars as &$particular) {
+				$stmt = $this->connection->db_connection->prepare("SELECT name FROM users WHERE id = :user_id LIMIT 1");
+				$stmt->bindParam(":user_id", $particular['user_id']);
+				$stmt->execute();
+				$user = $stmt->fetch();
+
+				$issue_date = date_create($particular['date_time']);
+				$particular['issued_by'] = $user['name'];
+				$particular['date'] = date_format($issue_date, 'F d, Y');
+				$particular['time'] = date_format($issue_date, 'g:i A');
+			}
+			return $particulars;
+		} else if ($type_search === "Delivery to De La Salle Branch") {
+			$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference AND type = 'Delivery to De La Salle Branch' ORDER BY date_time ASC LIMIT :index, :upTo");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->bindParam(':index', $index, \PDO::PARAM_INT);
+			$stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
+	        $index = ($page - 1)*5;
+	        $upTo = 5;
+			$stmt->execute();
+			$particulars = $stmt->fetchAll();
+			foreach($particulars as &$particular) {
+				$stmt = $this->connection->db_connection->prepare("SELECT name FROM users WHERE id = :user_id LIMIT 1");
+				$stmt->bindParam(":user_id", $particular['user_id']);
+				$stmt->execute();
+				$user = $stmt->fetch();
+
+				$issue_date = date_create($particular['date_time']);
+				$particular['issued_by'] = $user['name'];
+				$particular['date'] = date_format($issue_date, 'F d, Y');
+				$particular['time'] = date_format($issue_date, 'g:i A');
+			}
+			return $particulars;
+		}
 	}
 	public function monthlyReport($stock_id)
 	{
@@ -156,7 +284,7 @@ class Particular
 		$monthlyReportSpoilages = $stmt->fetchAll();
 		return $monthlyReportSpoilages;
 	}
-	public function create($stock_id, $type, $in, $out, $user_id) 
+	public function create($stock_id, $type, $qty, $user_id) 
 	{
 		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		$stmt = $this->connection->db_connection->prepare("SELECT * FROM stocks WHERE id = :stock_id");
@@ -164,10 +292,9 @@ class Particular
 		$stmt->execute();
 		$stock = $stmt->fetch();
 
-		$in = (float)$in;
-		$out = (float)$out;
+		$qty = (float)$qty;
 		if ($type === "Delivery to UST Branch" || $type === "Delivery to De La Salle Branch") {
-			if (((float)$stock['current_qty'] + $in) < $out) {
+			if ((float)$stock['current_qty'] < $qty) {
 				return "qty<out";
 			}
 		}
@@ -176,13 +303,16 @@ class Particular
 		$low_threshold = (float)$stock['low_threshold'];
 
 
-		if ($out <= 0 && ($type === "Delivery to UST Branch" || $type === "Delivery to De La Salle Branch")) {
+		if ($qty <= 0 && ($type === "Delivery to UST Branch" || $type === "Delivery to De La Salle Branch")) {
 			return "delivery0";
-		} else if ($in <= 0 && $type === "Purchase Order") {
+		} else if ($qty <= 0 && $type === "Purchase Order") {
 			return "purchase0";
 		} else {
-			$current_qty += $in;
-			$current_qty -= $out;
+			if ($type === "Delivery to UST Branch" || $type === "Delivery to De La Salle Branch") {
+				$current_qty -= $qty;
+			} else if ($type === "Purchase Order") {
+				$current_qty += $qty;
+			}
 			$stmt = $this->connection->db_connection->prepare("UPDATE stocks SET current_qty = :current_qty, status = :status WHERE id = :stock_id");
 			$stmt->bindParam(":current_qty", $current_qty);
 			$stmt->bindParam(":status", $status);
@@ -201,11 +331,14 @@ class Particular
 
 			$stmt->execute();
 			if ($type === "Delivery to UST Branch" || $type === "Delivery to De La Salle Branch") {
+				$in = 0;
+				$out = $qty;
 				$price_balance = ($out) * (float)$stock['price'];
 			} else if ($type === "Purchase Order") {
+				$in = $qty;
+				$out = 0;
 				$price_balance = ($in) * (float)$stock['price'];
 			}
-
 			$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, `in`, `out`, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :type, :in, :out, :balance, :price_balance, NOW())");
 			$stmt->bindParam(":stock_id", $stock_id);
 			$stmt->bindParam(":user_id", $user_id);
@@ -225,11 +358,13 @@ class Particular
 			return true;
 		}
 	}
-	public function spoilages($stock_id)
+	public function spoilages($stock_id, $spoilage_reference)
 	{
+		$supplier_reference = "%". $spoilage_reference . "%";
 		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		$stmt = $this->connection->db_connection->prepare("SELECT * FROM spoilages WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) ORDER BY date_time ASC");
+		$stmt = $this->connection->db_connection->prepare("SELECT * FROM spoilages WHERE stock_id = :stock_id AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE()) AND supplier_reference LIKE :supplier_reference ORDER BY date_time ASC");
 		$stmt->bindParam(":stock_id", $stock_id);
+		$stmt->bindParam(":supplier_reference", $supplier_reference);
 		$stmt->execute();
 		$particulars = $stmt->fetchAll();
 		foreach($particulars as &$particular) {
