@@ -7,9 +7,11 @@ $(document).ready(function() {
     var sortBy = "name";
     var step = "ASC";
 
+    var is_deleted = 0;
     var data = {
         type: $("#type").val(),
         keyword: $("#searchKeyword").val(),
+        is_deleted: is_deleted,
     };
     getInventoryPages(data);
     getMainInventory(data);
@@ -19,6 +21,7 @@ $(document).ready(function() {
         data = {
             type: $("#type").val(),
             keyword: $("#searchKeyword").val(),
+            is_deleted: is_deleted,
         };
         getInventoryPages(data);
         getMainInventory(data);
@@ -29,6 +32,7 @@ $(document).ready(function() {
         data = {
             type: $("#type").val(),
             keyword: $("#searchKeyword").val(),
+            is_deleted: is_deleted,
         };
         getInventoryPages(data);
         getMainInventory(data);
@@ -51,6 +55,7 @@ $(document).ready(function() {
                     page: currentPage,
                     orderby: sortBy,
                     step: step,
+                    is_deleted: is_deleted,
                 };
                 getMainInventory(data);
                 if (currentPage === 1) {
@@ -69,6 +74,7 @@ $(document).ready(function() {
                     page: currentPage,
                     orderby: sortBy,
                     step: step,
+                    is_deleted: is_deleted,
                 };
                 getMainInventory(data);
                 if (currentPage === totalPages) {
@@ -84,6 +90,7 @@ $(document).ready(function() {
                     page: currentPage,
                     orderby: sortBy,
                     step: step,
+                    is_deleted: is_deleted,
                 };
                 getMainInventory(data);
                 if (currentPage === 1) {
@@ -272,95 +279,175 @@ $(document).ready(function() {
                 $stockRows = $("#stockList").find('tbody');
                 $.each(stocks, function(i, stock) {
                     $stockRows.append('<tr data-toggle="modal" data-target="#stock' + stock.id + '"><td>' + stock.name + '</td><td>' + stock.category + '</td><td>' + stock.current_qty + '</td><td>' + stock.unit + '</td><td>₱' + stock.price + '</td><td class="' + (stock.status === "High Stock" ? "text-success" : "") + (stock.status === "Low Stock" ? "text-warning" : "") + (stock.status === "Needs Replenishment" ? "text-danger" : "") + (stock.status === "Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</td><td id="spoilagesOnTable' + stock.id + '"></td></tr>');
-                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">Stock Overview</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilages' + stock.id + '"><span class="fa fa-trash"></span> Spoilages Summary</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + ((stock.former_name) ? ("&nbsp;&nbsp;<small>(Formerly " + stock.former_name + ")</small>") : "")+'</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <p>Supplier: ' + stock.supplier + '</p><p>Supplier: ' + stock.supplier_location + '</p>' + ((stock.last_supplier_changed) ? " <p>(Supplier details was updated at: " + stock.last_supplier_changed + ")</p>" : "") + ' </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + " " + stock.unit + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Purchase Orders this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Deliveries this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Spoilages this month:</small> <h5 id="spoilagesTotal' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <h6>Legend:</h6> <p><small>DR: Delivery Receipt</small></p><p><small>PO: Purchase Order</small></p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h4>' + stock.name + '</h4> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <select name="type" class="form-control" required> <option value="Delivery to UST Branch">Delivery to UST Branch</option> <option value="Delivery to De La Salle Branch">Delivery to De La Salle Branch</option> <option value="Purchase Order">Purchase Order</option> </select> </div><div class="col-6"> <small>Amount: <span class="text-danger">*</span></small> <input type="number" step="any" min="0.0001" name="amount" class="form-control" required> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container-fluid" id="spoilages' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div><div class="col-6"> <h6>Legend:</h6> <p><small>SP: Spoilage Issue</small></p></div></div><hr> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#spoilagesSummary' + stock.id + '">Detailed spoilage summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilagesChart' + stock.id + '">Spoilages report</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active" id="spoilagesSummary' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="spoilagesList' + stock.id + '"></div></div></div><div class="tab-pane fade" id="spoilagesChart' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="monthlySpoilagesBody' + stock.id + '"> <canvas id="monthlySpoilages' + stock.id + '"></canvas> </div></div><hr> <div class="row"> <div class="col-12" id="monthlyPriceSpoilagesBody' + stock.id + '"> <canvas id="monthlyPriceSpoilages' + stock.id + '"></canvas> </div></div></div></div></div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
-                    //------------------------------------------PAGINATION-------------------------------------------------------
-                    var thisMonthCurrentPage = 1;
-                    var thisMonthTotalPages;
-                    var thisMonthData = {
-                        stock_id: stock.id
-                    };
-                    var requestForThisMonthPages = $.ajax({
-                        url: '../../controllers/admin/PaginateThisMonth.php',
+                    $("#stockModals").append('<div class="modal fade modal-big" id="stock' + stock.id + '" tabindex="-1" role="dialog" aria-labelledby="stockModal' + stock.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="stockModal' + stock.id + '">Stock Overview</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general' + stock.id + '"><span class="fa fa-tasks"></span> General Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#this-month' + stock.id + '"><span class="fa fa-line-chart"></span> Detailed Summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#monthly' + stock.id + '"><span class="fa fa-area-chart"></span> Monthly Summary Report</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#add-particulars' + stock.id + '"><span class="fa fa-plus"></span> Add Particulars</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilages' + stock.id + '"><span class="fa fa-trash"></span> Spoilages Summary</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active container" id="general' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + ((stock.former_name) ? ("&nbsp;&nbsp;<small>(Formerly " + stock.former_name + ")</small>") : "")+'</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p><p>Low Threshold: ' + stock.low_threshold + '&nbsp;' + stock.unit + '</p></div><div class="col-6"> <p>Supplier: ' + stock.supplier + '</p><p>Supplier: ' + stock.supplier_location + '</p>' + ((stock.last_supplier_changed) ? " <p>(Supplier details was updated at: " + stock.last_supplier_changed + ")</p>" : "") + ' </div></div><hr> <div class="row"> <div class="col-6"> <small>Current Quantity:</small> <h5>' + stock.current_qty + " " + stock.unit + '</h5> </div><div class="col-6"> <small>Status:</small> <h5 class="' + (stock.status==="High Stock" ? "text-success" : "") + (stock.status==="Low Stock" ? "text-warning" : "") + (stock.status==="Needs Replenishment" ? "text-danger" : "") + (stock.status==="Out of stock" ? "text-secondary" : "") + '">' + stock.status + '</h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Purchase Orders (Ins) this month:</small> <h5 id="ins' + stock.id + '"></h5> </div><div class="col-6"> <small>Total Deliveries (Outs) this month:</small> <h5 id="outs' + stock.id + '"></h5> </div></div><div class="row m-t-35"> <div class="col-6"> <small>Total Spoilages this month:</small> <h5 id="spoilagesTotal' + stock.id + '"></h5> </div></div></div><div class="tab-pane fade container-fluid" id="this-month' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <div class="row m-t-35"> <div class="col-5"> <select name="type_search" class="form-control" id="type_search' + stock.id + '"> <option value="All">All</option> <option value="Purchase Order">Purchase Order</option> <option value="Delivery">Delivery</option> <option value="Delivery to UST Branch">Delivery to UST Branch</option> <option value="Delivery to De La Salle Branch">Delivery to De La Salle Branch</option> </select> </div><div class="col-7"> <input type="text" name="reference_keyword_search" class="form-control" id="reference_keyword_search' + stock.id + '" placeholder="Enter supplier reference here"> </div></div><div class="row m-t-35"> <div class="col-12" id="particularList' + stock.id + '"> </div></div><div class="row m-t-35"> <div class="col-12" id="this-month-pagination' + stock.id + '"> </div></div></div><div class="tab-pane fade container-fluid" id="monthly' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <div class="row m-t-35"> <div class="col-12" id="monthlyReport' + stock.id + '"> </div></div></div><div class="tab-pane fade container" id="add-particulars' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <h3>Add Particular</h3> </div></div><hr> <div class="row m-t-35"> <div class="col-6"> <h4>' + stock.name + '</h4> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <form action="../../controllers/admin/AddParticular.php" method="post" class="addParticularForm"> <input type="hidden" name="stock_id" value="' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <small>Type: <span class="text-danger">*</span></small> <select name="type" class="form-control" required> <option value="Delivery to UST Branch">Delivery to UST Branch</option> <option value="Delivery to De La Salle Branch">Delivery to De La Salle Branch</option> <option value="Purchase Order">Purchase Order</option> </select> </div><div class="col-6"> <small>Quantity: <span class="text-danger">*</span></small> <input type="number" step="any" value="0" min="0" name="qty" class="form-control" required> </div></div><div class="row m-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Add Particular</button> </div></div></form> </div><div class="tab-pane fade container-fluid" id="spoilages' + stock.id + '"> <div class="row m-t-35"> <div class="col-6"> <h3>' + stock.name + '</h3> <p>Unit: ' + stock.unit + '</p><p>Price: ₱' + stock.price + ((stock.last_price_changed) ? " (Last updated at: " + stock.last_price_changed + ")" : "") + '</p></div></div><hr> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#spoilagesSummary' + stock.id + '">Detailed spoilage summary</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#spoilagesChart' + stock.id + '">Spoilages report</a> </li></ul> <div class="tab-content"> <div class="tab-pane fade show active" id="spoilagesSummary' + stock.id + '"> <div class="row m-t-35"> <div class="col-12"> <input type="text" name="spoilage_reference" class="form-control" id="spoilage_reference' + stock.id + '" placeholder="Enter supplier reference here"> </div></div><div class="row m-t-35"> <div class="col-12" id="spoilagesList' + stock.id + '"></div></div></div><div class="tab-pane fade" id="spoilagesChart' + stock.id + '"> <div class="row m-t-35"> <div class="col-12" id="monthlySpoilagesBody' + stock.id + '"> <canvas id="monthlySpoilages' + stock.id + '"></canvas> </div></div><hr> <div class="row"> <div class="col-12" id="monthlyPriceSpoilagesBody' + stock.id + '"> <canvas id="monthlyPriceSpoilages' + stock.id + '"></canvas> </div></div></div></div></div></div></div><div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+                    
+                    // ------------------------------------------- GET IN AND OUT TOTAL MONTHLY ----------------------------------------
+                    var monthlyTotals = $.ajax({
+                        url: '../../controllers/admin/GetMonthlyTotals.php',
                         type: 'POST',
-                        data: thisMonthData,
+                        data: {
+                            stock_id: stock.id
+                        },
                     });
-                    requestForThisMonthPages.done(function(response, textStatus, jqXHR) {
-                        if (parseInt(response) > 10) {
-                            $("#this-month-pagination"+ stock.id).empty().append('<ul class="pagination"></ul>');
-                            var $thisMonthPagination = $("#this-month-pagination"+ stock.id).find('.pagination');
-                            $thisMonthPagination.append('<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>');
-                            thisMonthTotalPages = Math.ceil((parseInt(response)/10));
-                            for (var i = 1; i <= thisMonthTotalPages; i++) {
-                                if (i === 1) {
-                                    $thisMonthPagination.append('<li class="page-item active"><a class="page-link" href="#">' + i + '</a></li>');
-                                } else {
-                                    $thisMonthPagination.append('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-                                }
-                            }
-                            $thisMonthPagination.append('<li class="page-item"><a class="page-link" href="#">Next</a></li>');
+                    monthlyTotals.done(function(response, textStatus, jqXHR) {
+                        var totals = JSON.parse(response);
+
+                        if (totals) {
+                            $("#ins" + stock.id).text(parseFloat(totals.ins) + " " + stock.unit +" (₱" + (parseFloat(totals.ins) * parseFloat(stock.price)) + ")");
+                            $("#outs" + stock.id).text(parseFloat(totals.outs) + " " + stock.unit +" (₱" + (parseFloat(totals.outs) * parseFloat(stock.price)) + ")");
                         } else {
-                            $("#this-month-pagination"+ stock.id).empty();
+                            $("#ins" + stock.id).text(0 + " " + stock.unit +" (₱0)");
+                            $("#outs" + stock.id).text(0 + " " + stock.unit +" (₱0)");
                         }
                     });
-                    requestForThisMonthPages.fail(function(jqXHR, textStatus, errorThrown) {
+                    monthlyTotals.fail(function(jqXHR, textStatus, errorThrown) {
                         $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
-                    $("#this-month-pagination"+ stock.id).on('click', '.page-item', function() {
-                        if (!($(this).hasClass("disabled")))
-                        {
-                            if ($.trim($(this).text()) === "Previous") {
-                                if (thisMonthCurrentPage === thisMonthTotalPages) {
-                                    $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
-                                }
-                                $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
-                                thisMonthCurrentPage -= 1;
-                                $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
-                                thisMonthData = {
-                                    stock_id: stock.id,
-                                    page: thisMonthCurrentPage,
-                                };
-                                getThisMonth(thisMonthData);
-                                if (thisMonthCurrentPage === 1) {
-                                    $(this).addClass('disabled');
-                                }
-                            } else if ($.trim($(this).text()) === "Next") {
-                                if (thisMonthCurrentPage === 1) {
-                                    $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
-                                }
-                                $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
-                                thisMonthCurrentPage += 1;
-                                $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
-                                thisMonthData = {
-                                    stock_id: stock.id,
-                                    page: thisMonthCurrentPage,
-                                };
-                                getThisMonth(thisMonthData);
-                                if (thisMonthCurrentPage === thisMonthTotalPages) {
-                                    $(this).addClass('disabled');
-                                }
-                            } else {
-                                $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
-                                thisMonthCurrentPage = parseInt($(this).text());
-                                $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
-                                thisMonthData = {
-                                    stock_id: stock.id,
-                                    page: thisMonthCurrentPage,
-                                };
-                                getThisMonth(thisMonthData);
-                                if (thisMonthCurrentPage === 1) {
-                                    $("#this-month-pagination"+ stock.id).find(':contains("Previous")').addClass('disabled');
-                                    $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
-                                }
-                                if (thisMonthCurrentPage === thisMonthTotalPages) {
-                                    $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
-                                    $("#this-month-pagination"+ stock.id).find(':contains("Next")').addClass('disabled');
-                                }
-                            }
+                    // -----------------------------------------------------------------------------------------------------------------
+                    // ------------------------------------------- GET SPOILAGE TOTAL MONTHLY ------------------------------------------
+                    var monthlyTotalSpoilage = $.ajax({
+                        url: '../../controllers/admin/GetMonthlyTotalSpoilage.php',
+                        type: 'POST',
+                        data: {
+                            stock_id: stock.id
+                        },
+                    });
+                    monthlyTotalSpoilage.done(function(response, textStatus, jqXHR) {
+                        var spoilagesTotal = JSON.parse(response);
+
+                        if (spoilagesTotal) {
+                            $("#spoilagesTotal"+stock.id).text(parseFloat(spoilagesTotal.spoilages) + " " + stock.unit +" (₱" + (parseFloat(spoilagesTotal.spoilages) * parseFloat(stock.price)) + ")");
+                            $("#spoilagesOnTable"+stock.id).text(parseFloat(spoilagesTotal.spoilages) + " " + stock.unit +" (₱" + (parseFloat(spoilagesTotal.spoilages) * parseFloat(stock.price)) + ")");
+                        } else {
+                            $("#spoilagesTotal"+stock.id).text(0 + " " + stock.unit +" (₱0)");
                         }
                     });
-                    //-------------------------------------------------------------------------------------------------------------
-                    //------------------------------------------------GET THIS MONTH-----------------------------------------------
+                    monthlyTotalSpoilage.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                    });
+                    // -----------------------------------------------------------------------------------------------------------------
+                    
+
+                    var thisMonthData = {
+                        stock_id: stock.id,
+                        type_search: "All",
+                        reference_keyword_search: "",
+                    };
+                    getPagination(thisMonthData);
                     getThisMonth(thisMonthData);
+
+                    $("#type_search" + stock.id).on('change', function() {
+                        thisMonthData = {
+                            stock_id: stock.id,
+                            type_search: $("#type_search" + stock.id).val(),
+                            reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                        };
+                        getPagination(thisMonthData);
+                        getThisMonth(thisMonthData);
+                    });
+
+                    $("#reference_keyword_search" + stock.id).on('keyup', function() {
+                        thisMonthData = {
+                            stock_id: stock.id,
+                            type_search: $("#type_search" + stock.id).val(),
+                            reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                        };
+                        getPagination(thisMonthData);
+                        getThisMonth(thisMonthData);
+                    });
+
+                    function getPagination(thisMonthData) {
+                        //------------------------------------------PAGINATION-------------------------------------------------------
+                        var thisMonthCurrentPage = 1;
+                        var thisMonthTotalPages;
+                        var requestForThisMonthPages = $.ajax({
+                            url: '../../controllers/admin/PaginateThisMonth.php',
+                            type: 'POST',
+                            data: thisMonthData,
+                        });
+                        requestForThisMonthPages.done(function(response, textStatus, jqXHR) {
+                            if (parseInt(response) > 5) {
+                                $("#this-month-pagination"+ stock.id).empty().append('<ul class="pagination"></ul>');
+                                var $thisMonthPagination = $("#this-month-pagination"+ stock.id).find('.pagination');
+                                $thisMonthPagination.append('<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>');
+                                thisMonthTotalPages = Math.ceil((parseInt(response)/5));
+                                for (var i = 1; i <= thisMonthTotalPages; i++) {
+                                    if (i === 1) {
+                                        $thisMonthPagination.append('<li class="page-item active"><a class="page-link" href="#">' + i + '</a></li>');
+                                    } else {
+                                        $thisMonthPagination.append('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+                                    }
+                                }
+                                $thisMonthPagination.append('<li class="page-item"><a class="page-link" href="#">Next</a></li>');
+                            } else {
+                                $("#this-month-pagination"+ stock.id).empty();
+                            }
+                        });
+                        requestForThisMonthPages.fail(function(jqXHR, textStatus, errorThrown) {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                        });
+                        $("#this-month-pagination"+ stock.id).on('click', '.page-item', function() {
+                            if (!($(this).hasClass("disabled")))
+                            {
+                                if ($.trim($(this).text()) === "Previous") {
+                                    if (thisMonthCurrentPage === thisMonthTotalPages) {
+                                        $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
+                                    }
+                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
+                                    thisMonthCurrentPage -= 1;
+                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
+                                    thisMonthData = {
+                                        stock_id: stock.id,
+                                        type_search: $("#type_search" + stock.id).val(),
+                                        reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                                        page: thisMonthCurrentPage,
+                                    };
+                                    getThisMonth(thisMonthData);
+                                    if (thisMonthCurrentPage === 1) {
+                                        $(this).addClass('disabled');
+                                    }
+                                } else if ($.trim($(this).text()) === "Next") {
+                                    if (thisMonthCurrentPage === 1) {
+                                        $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
+                                    }
+                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
+                                    thisMonthCurrentPage += 1;
+                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
+                                    thisMonthData = {
+                                        stock_id: stock.id,
+                                        type_search: $("#type_search" + stock.id).val(),
+                                        reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                                        page: thisMonthCurrentPage,
+                                    };
+                                    getThisMonth(thisMonthData);
+                                    if (thisMonthCurrentPage === thisMonthTotalPages) {
+                                        $(this).addClass('disabled');
+                                    }
+                                } else {
+                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
+                                    thisMonthCurrentPage = parseInt($(this).text());
+                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
+                                    thisMonthData = {
+                                        stock_id: stock.id,
+                                        type_search: $("#type_search" + stock.id).val(),
+                                        reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                                        page: thisMonthCurrentPage,
+                                    };
+                                    getThisMonth(thisMonthData);
+                                    if (thisMonthCurrentPage === 1) {
+                                        $("#this-month-pagination"+ stock.id).find(':contains("Previous")').addClass('disabled');
+                                        $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
+                                    }
+                                    if (thisMonthCurrentPage === thisMonthTotalPages) {
+                                        $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
+                                        $("#this-month-pagination"+ stock.id).find(':contains("Next")').addClass('disabled');
+                                    }
+                                }
+                            }
+                        });
+                        //-------------------------------------------------------------------------------------------------------------
+                    }
+                    //------------------------------------------------GET THIS MONTH-----------------------------------------------
                     function getThisMonth(thisMonthData) {
                         var ins = 0;
                         var outs = 0;
@@ -373,20 +460,14 @@ $(document).ready(function() {
                         requestThisMonth.done(function(response, textStatus, jqXHR) {
                             var particulars = JSON.parse(response);
                             if (particulars.length === 0) {
-                                $("#particularList"+ stock.id).empty().append('<div class="alert alert-info">There are no transactions for this month yet.</div>');
+                                $("#this-month-pagination"+ stock.id).empty();
+                                $("#particularList"+ stock.id).empty().append('<div class="alert alert-info">No transactions found.</div>');
                             } else {
-                                $("#particularList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Type</th> <th>Supplier Reference</th> <th>Quantity</th> <th>Remaining</th> <th>Price</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
+                                $("#particularList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Type</th> <th>Supplier Reference</th> <th>In</th> <th>Out</th> <th>Balance</th> <th>Price</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
                                 var $particularRows = $("#particularList"+ stock.id).find('tbody');
                                 $.each(particulars, function(i, particular) {
-                                    if (particular.type === "Purchase Order") {
-                                        ins += parseFloat(particular.amount);
-                                    } else if (particular.type === "Delivery to UST Branch" || particular.type === "Delivery to De La Salle Branch") {
-                                        outs += parseFloat(particular.amount);
-                                    }
-                                    $particularRows.append('<tr><td>' + particular.date + '</td><td>' + particular.time + '</td><td>' + particular.type + '</td><td>' + particular.supplier_reference + '</td><td>' + particular.amount + " " + stock.unit + '</td><td>' + particular.balance + " " + stock.unit + '</td><td>₱' + particular.price_balance + '</td><td>' + particular.issued_by + '</td></tr>');
+                                    $particularRows.append('<tr><td>' + particular.date + '</td><td>' + particular.time + '</td><td>' + particular.type + '</td><td>' + particular.supplier_reference + '</td><td>' + particular.in + " " + stock.unit + '</td><td>' + particular.out + " " + stock.unit + '</td><td>' + particular.balance + " " + stock.unit + '</td><td>₱' + particular.price_balance + '</td><td>' + particular.issued_by + '</td></tr>');
                                 });
-                                $("#ins" + stock.id).text(ins + " " + stock.unit +" (₱" + (ins * stock.price) + ")");
-                                $("#outs" + stock.id).text(outs + " " + stock.unit +" (₱" + (outs * stock.price) + ")");
                             }
                         });
                         requestThisMonth.fail(function(jqXHR, textStatus, errorThrown) {
@@ -938,8 +1019,18 @@ $(document).ready(function() {
                     //---------------------------------------------SPOILAGES-------------------------------------------------------
                     var stock_spoilage = {
                         stock_id: stock.id,
+                        spoilage_reference: $("#spoilage_reference" + stock.id).val(),
                     };
                     getThisSpoilage(stock_spoilage);
+
+                    $("#spoilage_reference" + stock.id).on('keyup', function() {
+                        stock_spoilage = {
+                            stock_id: stock.id,
+                            spoilage_reference: $("#spoilage_reference" + stock.id).val(),
+                        };
+                        getThisSpoilage(stock_spoilage);
+                    });
+
                     function getThisSpoilage(stock_spoilage) {
                         var spoilagesTotal = 0;
                         var requestSpoilagesHistory = $.ajax({
@@ -950,16 +1041,14 @@ $(document).ready(function() {
                         requestSpoilagesHistory.done(function(response, textStatus, jqXHR) {
                             var spoilages = JSON.parse(response);
                             if (spoilages.length === 0) {
-                                $("#spoilagesList"+ stock.id).empty().append('<div class="alert alert-info">There are no spoilages for this month yet.</div>');
+                                $("#spoilagesList"+ stock.id).empty().append('<div class="alert alert-info">No spoilages found.</div>');
                             } else {
-                                $("#spoilagesList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Reference Code</th> <th>Spoilages</th> <th>Remaining</th> <th>Cost</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
+                                $("#spoilagesList"+ stock.id).empty().append('<table class="table table-hover"> <thead class="thead-dark"> <th>Date</th> <th>Time</th> <th>Reference Code</th> <th>Spoilages</th> <th>Balance</th> <th>Cost</th> <th>Issued by</th> </thead> <tbody></tbody> </table>');
                                 var $spoilagesRows = $("#spoilagesList"+ stock.id).find('tbody');
                                 $.each(spoilages, function(i, spoilage) {
-                                    spoilagesTotal += spoilage.amount;
+                                    spoilagesTotal += parseFloat(spoilage.amount);
                                     $spoilagesRows.append('<tr><td>' + spoilage.date + '</td><td>' + spoilage.time + '</td><td>' + spoilage.supplier_reference + '</td><td>' + spoilage.amount + " " + stock.unit + '</td><td>' + spoilage.balance + " " + stock.unit + '</td><td>₱' + spoilage.price_balance + '</td><td>' + spoilage.issued_by + '</td></tr>');
                                 });
-                                $("#spoilagesTotal"+stock.id).text(spoilagesTotal + " " + stock.unit +" (₱" + (spoilagesTotal * stock.price) + ")");
-                                $("#spoilagesOnTable"+stock.id).text(spoilagesTotal + " " + stock.unit +" (₱" + (spoilagesTotal * stock.price) + ")");
                             }
                         });
                         requestSpoilagesHistory.fail(function(jqXHR, textStatus, errorThrown) {
@@ -1087,7 +1176,7 @@ $(document).ready(function() {
                         data: {
                             stock_id: $thisAddParticularForm.find("input[name='stock_id']").val(),
                             type: $thisAddParticularForm.find("select[name='type']").val(),
-                            amount: $thisAddParticularForm.find("input[name='amount']").val(),
+                            qty: $thisAddParticularForm.find("input[name='qty']").val(),
                         },
                     });
                     requestAddParticular.done(function(response, textStatus, jqXHR) {
@@ -1100,8 +1189,10 @@ $(document).ready(function() {
                             getMainInventory(data);
                         } else if (response === "qty<out") {
                             $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("You have insufficient amount of quantity on this stock.").delay( 5000 ).slideUp(300);    
-                        } else if (response === "err") {
-                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error adding particular. Check inputs again.").delay( 5000 ).slideUp(300);
+                        } else if (response === "delivery0") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Out quantity must not be 0 if Delivery is selected.").delay( 5000 ).slideUp(300);
+                        } else if (response === "purchase0") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("In quantity must not be 0 if Purchase is selected.").delay( 5000 ).slideUp(300);
                         }
                     });
                     requestAddParticular.fail(function(jqXHR, textStatus, errorThrown) {
@@ -1138,6 +1229,39 @@ $(document).ready(function() {
                         }
                     });
                     requestAddSpoilage.fail(function(jqXHR, textStatus, errorThrown) {
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                    });
+                });
+                //-----------------------------------------------------------------------------------------------------------------
+                //-----------------------------------------UPDATE STOCK DETAILS -----------------------------------------------------------
+                $(".changeStockDetails").on('submit', function(e) {
+                    e.preventDefault();
+                    var $thisChangeStockDetailsForm = $(this);
+                    var $modal = $(this).closest('.modal');
+                    var requestChangeStockDetails = $.ajax({
+                        url: $thisChangeStockDetailsForm.attr("action"),
+                        type: 'POST',
+                        data: {
+                            stock_id: $thisChangeStockDetailsForm.find("input[name='stock_id']").val(),
+                            former_name: $thisChangeStockDetailsForm.find("input[name='former_name']").val(),
+                            name: $thisChangeStockDetailsForm.find("input[name='name']").val(),
+                            category: $thisChangeStockDetailsForm.find("select[name='category']").val(),
+                            unit: $thisChangeStockDetailsForm.find("select[name='unit']").val(),
+                            current_qty: $thisChangeStockDetailsForm.find("input[name='current_qty']").val(),
+                            low_threshold: $thisChangeStockDetailsForm.find("input[name='low_threshold']").val(),
+                        },
+                    });
+                    requestChangeStockDetails.done(function(response, textStatus, jqXHR) {
+                        if (response === "ok") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Change stock details successful!").delay( 5000 ).slideUp(300);
+                            $modal.modal('toggle');
+                            $('body').removeClass('modal-open');
+                            $('.modal-backdrop').remove();
+                            $('body').css('padding-right',0);
+                            getMainInventory(data);
+                        }
+                    });
+                    requestChangeStockDetails.fail(function(jqXHR, textStatus, errorThrown) {
                         $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                 });

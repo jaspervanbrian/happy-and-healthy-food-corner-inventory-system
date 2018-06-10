@@ -57,13 +57,13 @@ $(document).ready(function() {
             url: $form.attr("action"),
             type: 'POST',
             data: {
-                id: $form.find("input[name='id']").val(),
+                currentPassword: $form.find("input[name='currentPassword']").val(),
                 password: $form.find("input[name='password']").val(),
             },
         });
         request.done(function(response, textStatus, jqXHR) {
             if (response === "ok") {
-                $("#flash-message").empty().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
                 $form.find("input[name='password']").val("");
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
@@ -73,6 +73,8 @@ $(document).ready(function() {
                 getAdmin(adminData);
                 getUserPages();
                 getUser(userData);
+            } else if (response === "err") {
+                $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong current password.").delay( 5000 ).slideUp(300);
             }
         });
         request.fail(function(jqXHR, textStatus, errorThrown) {

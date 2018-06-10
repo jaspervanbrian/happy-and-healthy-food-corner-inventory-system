@@ -15,6 +15,48 @@ class Particular
 	{
 		$this->connection = new Connection();    
 	}
+	public function getMonthlyTotals($stock_id)
+	{
+		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$stmt = $this->connection->db_connection->prepare("
+			SELECT ROUND(SUM(t1.`in`), 4) ins, ROUND(SUM(t1.`out`), 4) outs
+			FROM particulars t1
+			WHERE 
+			    t1.stock_id = :stock_id AND
+			    MONTH(t1.date_time) = MONTH(CURRENT_DATE()) AND
+			    YEAR(t1.date_time) = YEAR(CURRENT_DATE())
+			GROUP BY
+			    MONTH(t1.date_time), YEAR(t1.date_time), t1.stock_id
+		");
+		$stmt->bindParam(":stock_id", $stock_id);
+		$stmt->execute();
+		if ($stmt->rowCount() <= 0) {
+			return "";
+		}
+		$totals = $stmt->fetch();
+		return $totals;
+	}
+	public function getMonthlyTotalSpoilages($stock_id)
+	{
+		$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$stmt = $this->connection->db_connection->prepare("
+			SELECT ROUND(SUM(t2.amount), 4) spoilages
+			FROM spoilages t2
+			WHERE
+			    t2.stock_id = :stock_id AND
+			    MONTH(t2.date_time) = MONTH(CURRENT_DATE()) AND
+			    YEAR(t2.date_time) = YEAR(CURRENT_DATE())
+			GROUP BY
+			    MONTH(t2.date_time), YEAR(t2.date_time), t2.stock_id
+		");
+		$stmt->bindParam(":stock_id", $stock_id);
+		$stmt->execute();
+		if ($stmt->rowCount() <= 0) {
+			return "";
+		}
+		$totalSpoilage = $stmt->fetch();
+		return $totalSpoilage;
+	}
 	public function thisMonthParticularPages($stock_id, $type_search, $reference_keyword_search)
 	{
 		$supplier_reference = "%" . $reference_keyword . "%";
@@ -339,21 +381,22 @@ class Particular
 				$out = 0;
 				$price_balance = ($in) * (float)$stock['price'];
 			}
-			$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, `in`, `out`, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :type, :in, :out, :balance, :price_balance, NOW())");
+
+			$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND DAY(date_time) = DAY(CURRENT_DATE()) AND MONTH(date_time) = MONTH(CURRENT_DATE()) AND YEAR(date_time) = YEAR(CURRENT_DATE())");
+			$stmt->bindParam(":stock_id", $stock_id);
+			$stmt->execute();
+			$next_id = $stmt->rowCount() + 1;
+			$supplier_reference = date('mdY') . "_" . $next_id;
+
+			$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, supplier_reference, `in`, `out`, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :type, :supplier_reference, :in, :out, :balance, :price_balance, NOW())");
 			$stmt->bindParam(":stock_id", $stock_id);
 			$stmt->bindParam(":user_id", $user_id);
 			$stmt->bindParam(":type", $type);
+			$stmt->bindParam(":supplier_reference", $supplier_reference);
 			$stmt->bindParam(":in", $in);
 			$stmt->bindParam(":out", $out);
 			$stmt->bindParam(":balance", $current_qty);
 			$stmt->bindParam(":price_balance", $price_balance);
-			$stmt->execute();
-
-			$last_id = $this->connection->db_connection->lastInsertId();
-			$supplier_reference = date('mdY') . "_" . $last_id;
-			$stmt = $this->connection->db_connection->prepare("UPDATE particulars SET supplier_reference = :supplier_reference WHERE id = :id");
-			$stmt->bindParam(":id", $last_id);
-			$stmt->bindParam(":supplier_reference", $supplier_reference);
 			$stmt->execute();
 			return true;
 		}
