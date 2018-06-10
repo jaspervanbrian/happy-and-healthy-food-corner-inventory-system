@@ -13,7 +13,7 @@ if (isset($_POST['stock_id']) &&
 	isset($_POST['quantity']) &&
 	isset($_SESSION['user'])
 ) {
-	$is_added = $particular->create($_POST['stock_id'], "Spoilage", $_POST['quantity'], $_SESSION['user']['id']);
+	$is_added = $particular->addSpoilage($_POST['stock_id'], $_POST['quantity'], $_SESSION['user']['id']);
 	if ($is_added === true) {
 		echo "ok";
 	} else {

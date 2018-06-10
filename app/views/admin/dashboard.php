@@ -294,6 +294,12 @@ if (isset($_SESSION['user'])) {
 									<input type="text" name="supplier_location" class="form-control" required>
 								</div>
 							</div>
+							<div class="row m-t-35">
+								<div class="col-6">
+									<small>Low Threshold <span class="text-danger">*</span></small>
+									<input type="number" step="any" min="0.0001" class="form-control" name="low_threshold" required>
+								</div>
+							</div>
 							<div class="row p-t-35">
 								<div class="col-12 d-flex justify-content-center"> 
 									<button type="submit" class="btn btn-success">Add Stock</button>

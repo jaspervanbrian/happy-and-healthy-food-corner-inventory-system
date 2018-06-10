@@ -100,7 +100,7 @@ class Stock
             return $stmt->rowCount();
         }
     }
-    public function create($name, $category, $unit, $current_qty, $price, $supplier, $supplier_location)
+    public function create($name, $category, $unit, $current_qty, $price, $supplier, $supplier_location, $low_threshold)
     {
         $name = trim($name);
         $category = trim($category);
@@ -113,82 +113,19 @@ class Stock
         }
         $current_qty = (float)$current_qty;
         $price = (float)$price;
-
+        $low_threshold = (float)$low_threshold;
         $status = "";
 
-        if ($category === "Meat") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 5) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 5 && $current_qty < 20) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 20) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Vegetables") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 5) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 5 && $current_qty < 20) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 20) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Packaging") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 1500) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 1500 && $current_qty < 3000) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 3000) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Grocery") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 20) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 20 && $current_qty < 50) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 50) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Rice") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 25) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 25 && $current_qty < 50) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 50) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Sauce") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 2) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 2 && $current_qty < 4) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 4) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Fruits") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 50) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 50 && $current_qty < 100) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 100) {
-                $status = "High Stock";
-            }
+        if ($current_qty <= 0) {
+            $status = "Needs Replenishment";
+        } else if ($current_qty > 0 && $current_qty <= $low_threshold) {
+            $status = "Low Stock";
+        } else if ($current_qty > $low_threshold) {
+            $status = "High Stock";
         }
+        
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, supplier, supplier_location, status, is_deleted) VALUES (:name, :category, :unit, :current_qty, :price, :supplier, :supplier_location, :status, :is_deleted)");
+        $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, supplier, supplier_location, status, is_deleted, low_threshold) VALUES (:name, :category, :unit, :current_qty, :price, :supplier, :supplier_location, :status, :is_deleted, :low_threshold)");
         $is_deleted = 0;
         $stmt->bindParam(":name", $name);
         $stmt->bindParam(":category", $category);
@@ -199,6 +136,7 @@ class Stock
         $stmt->bindParam(":supplier_location", $supplier_location);
         $stmt->bindParam(":status", $status);
         $stmt->bindParam(":is_deleted", $is_deleted, \PDO::PARAM_INT);
+        $stmt->bindParam(":low_threshold", $low_threshold);
         $stmt->execute();
         return true;
     }
@@ -219,88 +157,27 @@ class Stock
         $stmt->execute();
         return true;
     }
-    public function updateDetails($stock_id, $name, $former_name, $unit, $category, $current_qty)
+    public function updateDetails($stock_id, $name, $former_name, $unit, $category, $current_qty, $low_threshold)
     {
         $status = "";
         $current_qty = (float)$current_qty;
-        if ($category === "Meat") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 5) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 5 && $current_qty < 20) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 20) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Vegetables") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 5) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 5 && $current_qty < 20) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 20) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Packaging") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 1500) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 1500 && $current_qty < 3000) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 3000) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Grocery") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 20) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 20 && $current_qty < 50) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 50) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Rice") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 25) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 25 && $current_qty < 50) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 50) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Sauce") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 2) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 2 && $current_qty < 4) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 4) {
-                $status = "High Stock";
-            }
-        } else if ($category === "Fruits") {
-            if ($current_qty <= 0) {
-                $status = "Out of stock";
-            } else if ($current_qty > 0 && $current_qty < 50) {
-                $status = "Needs Replenishment";
-            } else if ($current_qty >= 50 && $current_qty < 100) {
-                $status = "Low Stock";
-            } else if ($current_qty >= 100) {
-                $status = "High Stock";
-            }
+        $low_threshold = (float)$low_threshold;
+
+        if ($current_qty <= 0) {
+            $status = "Needs Replenishment";
+        } else if ($current_qty > 0 && $current_qty <= $low_threshold) {
+            $status = "Low Stock";
+        } else if ($current_qty > $low_threshold) {
+            $status = "High Stock";
         }
-        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET name = :name, former_name = :former_name, unit = :unit, category = :category, status = :status WHERE id = :id");
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET name = :name, former_name = :former_name, unit = :unit, category = :category, status = :status, low_threshold = :low_threshold WHERE id = :id");
         $stmt->bindParam(":id", $stock_id);
         $stmt->bindParam(":name", $name);
         $stmt->bindParam(":former_name", $former_name);
         $stmt->bindParam(":unit", $unit);
         $stmt->bindParam(":category", $category);
         $stmt->bindParam(":status", $status);
+        $stmt->bindParam(":low_threshold", $low_threshold);
         $stmt->execute();
         return true;
     }

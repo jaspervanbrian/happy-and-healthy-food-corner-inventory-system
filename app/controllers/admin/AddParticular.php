@@ -11,17 +11,20 @@ $particular = new Particular();
 
 if (isset($_POST['stock_id']) &&
 	isset($_POST['type']) &&
-	isset($_POST['amount']) &&
+	isset($_POST['in']) &&
+	isset($_POST['out']) &&
 	isset($_SESSION['user'])
 ) {
-	$is_added = $particular->create($_POST['stock_id'], $_POST['type'], $_POST['amount'], $_SESSION['user']['id']);
+	$is_added = $particular->create($_POST['stock_id'], $_POST['type'], $_POST['in'], $_POST['out'], $_SESSION['user']['id']);
 	if ($is_added === true) {
 		echo "ok";
 	} else {
 		if ($is_added === "qty<out") {
 			echo "qty<out";
-		} else if ($is_added === false) {
-			echo "err";
+		} else if ($is_added === "delivery0") {
+			echo "delivery0";
+		} else if ($is_added === "purchase0") {
+			echo "purchase0";
 		}
 	}
 }
