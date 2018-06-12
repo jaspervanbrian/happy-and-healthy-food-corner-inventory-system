@@ -231,6 +231,7 @@ $(document).ready(function() {
             data: {
                 currentPassword: $form.find("input[name='currentPassword']").val(),
                 password: $form.find("input[name='password']").val(),
+                confirm_password: $form.find("input[name='confirm_password']").val(),
             },
         });
         request.done(function(response, textStatus, jqXHR) {
@@ -247,6 +248,8 @@ $(document).ready(function() {
                 getUser(userData);
             } else if (response === "err") {
                 $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong current password.").delay( 5000 ).slideUp(300);
+            } else if (response === "confirm") {
+                $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong confirmation password.").delay( 5000 ).slideUp(300);
             }
         });
         request.fail(function(jqXHR, textStatus, errorThrown) {

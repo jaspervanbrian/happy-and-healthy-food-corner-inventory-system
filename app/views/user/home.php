@@ -161,6 +161,13 @@ if (isset($_SESSION['user'])) {
 											<input type="password" name="password" class="form-control" required>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col-3"></div>
+										<div class="col-6">
+											<small>Confirm New Password <span class="text-danger">*</span></small>
+											<input type="password" name="confirm_password" class="form-control" required>
+										</div>
+									</div>
 									<div class="row p-t-35">
 										<div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save</button> </div>
 									</div>

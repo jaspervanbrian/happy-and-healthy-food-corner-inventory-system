@@ -16,6 +16,7 @@ create table users(
 create table stocks(
     `id` int auto_increment not null,
     `name` varchar(255) not null,
+    `former_name` varchar(255),
     `category` varchar(255) not null,
     `unit` varchar(255) not null,
     `current_qty` float not null,
@@ -63,6 +64,8 @@ create table spoilages (
 insert into users (name, username,email_address,password,role,security_question,answer)
 values ('Admin', 'admin', 'admin@example.com', 'admin1234', 'admin', "What is your mother's maiden name?", "Admin");
 
+
+select * from stocks;
 
 SELECT ROUND(SUM(t1.`in`), 4) ins, ROUND(SUM(t1.`out`), 4) outs
 FROM particulars t1
