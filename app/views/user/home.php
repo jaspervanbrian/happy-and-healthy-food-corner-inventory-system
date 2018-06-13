@@ -141,6 +141,7 @@ if (isset($_SESSION['user'])) {
 							</div>
 							<div class="tab-pane container" id="myPassword">
 								<form action="../../controllers/admin/EditPassword.php" id="myPasswordForm" method="post">
+									<input type="hidden" name="id" value="<?= $_SESSION['user']['id'] ?>"> 
 									<div class="row m-t-35">
 										<div class="col-12">
 											<h3><span class="fa fa-lock"></span> Change Password</h3>

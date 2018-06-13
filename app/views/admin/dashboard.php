@@ -196,6 +196,7 @@ if (isset($_SESSION['user'])) {
 							</div>
 							<div class="tab-pane container" id="myPassword">
 								<form action="../../controllers/admin/EditPassword.php" id="myPasswordForm" method="post">
+									<input type="hidden" name="id" value="<?= $_SESSION['user']['id'] ?>"> 
 									<div class="row m-t-35">
 										<div class="col-12">
 											<h3><span class="fa fa-lock"></span> Change Password</h3>
@@ -283,7 +284,7 @@ if (isset($_SESSION['user'])) {
 										<option value="gallons">gallons</option>
 										<option value="grams">grams</option>
 										<option value="kgs">kgs</option>
-										<option value="litters">litters</option>
+										<option value="liters">liters</option>
 										<option value="pack">pack</option>
 										<option value="pieces">pieces</option>
 										<option value="oz">oz</option>

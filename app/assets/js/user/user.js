@@ -30,11 +30,11 @@ $(document).ready(function() {
                 getUserPages();
                 getUser(userData);
             } else if (response === "usernameTaken") {
-                $("#flash-message").empty().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
+                $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
             } else if (response === "emailTaken") {
-                $("#flash-message").empty().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);   
+                $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);   
             } else if (response === "err") {
-                $("#flash-message").empty().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
+                $("#flash-message").empty().removeClass().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -42,7 +42,7 @@ $(document).ready(function() {
             }
         });
         request.fail(function(jqXHR, textStatus, errorThrown) {
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     });
 
@@ -57,6 +57,7 @@ $(document).ready(function() {
             url: $form.attr("action"),
             type: 'POST',
             data: {
+                id: $form.find("input[name='id']").val(),
                 currentPassword: $form.find("input[name='currentPassword']").val(),
                 password: $form.find("input[name='password']").val(),
                 confirm_password: $form.find("input[name='confirm_password']").val(),
@@ -65,7 +66,9 @@ $(document).ready(function() {
         request.done(function(response, textStatus, jqXHR) {
             if (response === "ok") {
                 $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                $form.find("input[name='currentPassword']").val("");
                 $form.find("input[name='password']").val("");
+                $form.find("input[name='confirm_password']").val("");
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -81,7 +84,7 @@ $(document).ready(function() {
             }
         });
         request.fail(function(jqXHR, textStatus, errorThrown) {
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     });
 });

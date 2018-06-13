@@ -147,7 +147,7 @@ $(document).ready(function() {
         });
         request.done(function(response, textStatus, jqXHR) {
             if (response === "ok") {
-                $("#flash-message").empty().addClass("alert alert-success").show().append("Add user successful!").delay( 5000 ).slideUp(300);
+                $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Add user successful!").delay( 5000 ).slideUp(300);
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -157,11 +157,11 @@ $(document).ready(function() {
                 getUserPages();
                 getUser(userData);
             } else if (response === "usernameTaken") {
-                $("#flash-message").empty().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
+                $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
             } else if (response === "emailTaken") {
-                $("#flash-message").empty().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);   
+                $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);   
             } else if (response === "err") {
-                $("#flash-message").empty().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
+                $("#flash-message").empty().removeClass().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -169,7 +169,7 @@ $(document).ready(function() {
             }
         });
         request.fail(function(jqXHR, textStatus, errorThrown) {
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     });
     $("#myDetailsForm").on('submit', function(e) {
@@ -192,7 +192,7 @@ $(document).ready(function() {
         });
         request.done(function(response, textStatus, jqXHR) {
             if (response === "ok") {
-                $("#flash-message").empty().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
+                $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -202,11 +202,11 @@ $(document).ready(function() {
                 getUserPages();
                 getUser(userData);
             } else if (response === "usernameTaken") {
-                $("#flash-message").empty().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
+                $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
             } else if (response === "emailTaken") {
-                $("#flash-message").empty().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);   
+                $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);   
             } else if (response === "err") {
-                $("#flash-message").empty().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
+                $("#flash-message").empty().removeClass().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -229,6 +229,7 @@ $(document).ready(function() {
             url: $form.attr("action"),
             type: 'POST',
             data: {
+                id: $form.find("input[name='id']").val(),
                 currentPassword: $form.find("input[name='currentPassword']").val(),
                 password: $form.find("input[name='password']").val(),
                 confirm_password: $form.find("input[name='confirm_password']").val(),
@@ -237,7 +238,9 @@ $(document).ready(function() {
         request.done(function(response, textStatus, jqXHR) {
             if (response === "ok") {
                 $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                $form.find("input[name='currentPassword']").val("");
                 $form.find("input[name='password']").val("");
+                $form.find("input[name='confirm_password']").val("");
                 $modal.modal('toggle');
                 $('body').removeClass('modal-open');
                 $('.modal-backdrop').remove();
@@ -253,7 +256,7 @@ $(document).ready(function() {
             }
         });
         request.fail(function(jqXHR, textStatus, errorThrown) {
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     });
 
@@ -307,7 +310,7 @@ $(document).ready(function() {
 				$adminListBody = $("#adminList").find('tbody');
 				$.each(adminList, function(i, admin) {
 					$adminListBody.append('<tr data-toggle="modal" data-target="#admin' + admin.id + '"><td>' + admin.name + '</td><td>' + admin.username + '</td><td>' + admin.email_address + '</td></tr>');
-					$("#adminModals").append('<div class="modal fade" id="admin' + admin.id + '" tabindex="-1" role="dialog" aria-labelledby="adminModal' + admin.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="adminModal' + admin.id + '">Edit Admin</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#adminDetail' + admin.id + '">Details</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#adminPassword' + admin.id + '">Change Password</a> </li></ul> <div class="tab-content"> <div class="tab-pane active container" id="adminDetail' + admin.id + '"> <form action="../../controllers/admin/EditUser.php" method="post" class="editAdmin"> <input type="hidden" name="id" value="' + admin.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"><span class="fa fa-user"></span> User Details</h3> </div></div><hr> <div class="row"> <div class="col-6"> <small>Name: </small> <input type="text" name="name" value="' + admin.name + '" class="form-control" required> </div><div class="col-6"> <small>Username: </small> <input type="text" name="username" value="' + admin.username + '" class="form-control" required> </div></div><div class="row p-t-35"> <div class="col-6"> <small>Email Address: </small> <input type="email" name="email_address" value="' + admin.email_address + '" class="form-control" required> </div><div class="col-6"> <small>Role: </small> <select name="role" class="form-control" required ' + (admin.role==="me" ? "disabled" : "") + '> <option value="admin" ' + (admin.role==="admin" ? "selected" : "") + '>Admin</option> <option value="user" ' + (admin.role==="user" ? "selected" : "") + '>User</option> </select> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save changes</button> </div></div></form> </div><div class="tab-pane container" id="adminPassword' + admin.id + '"> <form action="../../controllers/admin/EditPassword.php" class="editAdminPassword" method="post"><input type="hidden" name="id" value="' + admin.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"><h3><span class="fa fa-lock"></span> Change Password</h3> </div></div><hr> <div class="row"> <div class="col-3"></div><div class="col-6"> <small>New Password <span class="text-danger">*</span></small> <input type="password" name="password" class="form-control"> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+					$("#adminModals").append('<div class="modal fade" id="admin' + admin.id + '" tabindex="-1" role="dialog" aria-labelledby="adminModal' + admin.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="adminModal' + admin.id + '">Edit Admin</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#adminDetail' + admin.id + '">Details</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#adminPassword' + admin.id + '">Change Password</a> </li></ul> <div class="tab-content"> <div class="tab-pane active container" id="adminDetail' + admin.id + '"> <form action="../../controllers/admin/EditUser.php" method="post" class="editAdmin"> <input type="hidden" name="id" value="' + admin.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"><span class="fa fa-user"></span> User Details</h3> </div></div><hr> <div class="row"> <div class="col-6"> <small>Name: </small> <input type="text" name="name" value="' + admin.name + '" class="form-control" required> </div><div class="col-6"> <small>Username: </small> <input type="text" name="username" value="' + admin.username + '" class="form-control" required> </div></div><div class="row p-t-35"> <div class="col-6"> <small>Email Address: </small> <input type="email" name="email_address" value="' + admin.email_address + '" class="form-control" required> </div><div class="col-6"> <small>Role: </small> <select name="role" class="form-control" required ' + (admin.role==="me" ? "disabled" : "") + '> <option value="admin" ' + (admin.role==="admin" ? "selected" : "") + '>Admin</option> <option value="user" ' + (admin.role==="user" ? "selected" : "") + '>User</option> </select> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save changes</button> </div></div></form> </div><div class="tab-pane container" id="adminPassword' + admin.id + '"> <form action="../../controllers/admin/EditPassword.php" class="editAdminPassword" method="post"> <input type="hidden" name="id" value="' + admin.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"> <h3><span class="fa fa-lock"></span> Change Password</h3> </div></div><hr> <div class="row"> <div class="col-3"></div><div class="col-6"> <small>Current Password <span class="text-danger">*</span></small> <input type="password" name="currentPassword" class="form-control" required> </div></div><div class="row"> <div class="col-3"></div><div class="col-6"> <small>New Password <span class="text-danger">*</span></small> <input type="password" name="password" class="form-control" required> </div></div><div class="row"> <div class="col-3"></div><div class="col-6"> <small>Confirm New Password <span class="text-danger">*</span></small> <input type="password" name="confirm_password" class="form-control" required> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
 				});
 				$(".editAdmin").on('submit', function(e) {
 					e.preventDefault();
@@ -329,18 +332,18 @@ $(document).ready(function() {
 					});
 					request.done(function(response, textStatus, jqXHR) {
 						if (response === "ok") {
-							$("#flash-message").empty().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
+							$("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
 							$modal.modal('toggle');
 							$('body').removeClass('modal-open');
 							$('.modal-backdrop').remove();
 							$('body').css('padding-right',0);
 							getAdmin(adminData);
 						} else if (response === "usernameTaken") {
-							$("#flash-message").empty().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);	
+							$("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);	
 						} else if (response === "emailTaken") {
-							$("#flash-message").empty().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);	
+							$("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);	
 						} else if (response === "err") {
-							$("#flash-message").empty().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
+							$("#flash-message").empty().removeClass().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
 							$modal.modal('toggle');
 							$('body').removeClass('modal-open');
 							$('.modal-backdrop').remove();
@@ -348,7 +351,7 @@ $(document).ready(function() {
 						}
 					});
 					request.fail(function(jqXHR, textStatus, errorThrown) {
-						$("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+						$("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
 					});
 				});
                 $(".editAdminPassword").on('submit', function(e) {
@@ -363,22 +366,30 @@ $(document).ready(function() {
                         type: 'POST',
                         data: {
                             id: $form.find("input[name='id']").val(),
+                            currentPassword: $form.find("input[name='currentPassword']").val(),
                             password: $form.find("input[name='password']").val(),
+                            confirm_password: $form.find("input[name='confirm_password']").val(),
                         },
                     });
                     request.done(function(response, textStatus, jqXHR) {
                         if (response === "ok") {
-                            $("#flash-message").empty().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                            $form.find("input[name='currentPassword']").val("");
                             $form.find("input[name='password']").val("");
+                            $form.find("input[name='confirm_password']").val("");
                             $modal.modal('toggle');
                             $('body').removeClass('modal-open');
                             $('.modal-backdrop').remove();
                             $('body').css('padding-right',0);
                             getAdmin(adminData);
+                        } else if (response === "err") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong current password.").delay( 5000 ).slideUp(300);
+                        } else if (response === "confirm") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong confirmation password.").delay( 5000 ).slideUp(300);
                         }
                     });
                     request.fail(function(jqXHR, textStatus, errorThrown) {
-                        $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                 });
 			}
@@ -415,7 +426,7 @@ $(document).ready(function() {
             }
         })
         requestUserPages.fail(function (jqXHR, textStatus, errorThrown){
-            $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
     }
 	function getUser(userData) 
@@ -439,7 +450,7 @@ $(document).ready(function() {
 				$userListBody = $("#userList").find('tbody');
 				$.each(userList, function(i, user) {
 					$userListBody.append('<tr data-toggle="modal" data-target="#user' + user.id + '"><td>' + user.name + '</td><td>' + user.username + '</td><td>' + user.email_address + '</td></tr>');
-					$("#userModals").append('<div class="modal fade" id="user' + user.id + '" tabindex="-1" role="dialog" aria-labelledby="userModal' + user.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="userModal' + user.id + '">Edit User</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#userDetail' + user.id + '">Details</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#userPassword' + user.id + '">Change Password</a> </li></ul> <div class="tab-content"> <div class="tab-pane active container" id="userDetail' + user.id + '"> <form action="../../controllers/admin/EditUser.php" method="post" class="editUser"> <input type="hidden" name="id" value="' + user.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"><span class="fa fa-user"></span> User Details</h3> </div></div><hr> <div class="row"> <div class="col-6"> <small>Name: </small> <input type="text" name="name" value="' + user.name + '" class="form-control" required> </div><div class="col-6"> <small>Username: </small> <input type="text" name="username" value="' + user.username + '" class="form-control" required> </div></div><div class="row p-t-35"> <div class="col-6"> <small>Email Address: </small> <input type="email" name="email_address" value="' + user.email_address + '" class="form-control" required> </div><div class="col-6"> <small>Role: </small> <select name="role" class="form-control" required ' + (user.role==="me" ? "disabled" : "") + '> <option value="admin" ' + (user.role==="admin" ? "selected" : "") + '>Admin</option> <option value="user" ' + (user.role==="user" ? "selected" : "") + '>User</option> </select> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save changes</button> </div></div></form> </div><div class="tab-pane container" id="userPassword' + user.id + '"> <form action="../../controllers/admin/EditPassword.php" class="editUserPassword" method="post"><input type="hidden" name="id" value="' + user.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"><h3><span class="fa fa-lock"></span> Change Password</h3> </div></div><hr> <div class="row"> <div class="col-3"></div><div class="col-6"> <small>New Password <span class="text-danger">*</span></small> <input type="password" name="password" class="form-control"> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+					$("#userModals").append('<div class="modal fade" id="user' + user.id + '" tabindex="-1" role="dialog" aria-labelledby="userModal' + user.id + '" aria-hidden="true"> <div class="modal-dialog modal-lg" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="userModal' + user.id + '">Edit User</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div><div class="modal-body"> <ul class="nav nav-tabs"> <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#userDetail' + user.id + '">Details</a> </li><li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#userPassword' + user.id + '">Change Password</a> </li></ul> <div class="tab-content"> <div class="tab-pane active container" id="userDetail' + user.id + '"> <form action="../../controllers/admin/EditUser.php" method="post" class="editUser"> <input type="hidden" name="id" value="' + user.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"><span class="fa fa-user"></span> User Details</h3> </div></div><hr> <div class="row"> <div class="col-6"> <small>Name: </small> <input type="text" name="name" value="' + user.name + '" class="form-control" required> </div><div class="col-6"> <small>Username: </small> <input type="text" name="username" value="' + user.username + '" class="form-control" required> </div></div><div class="row p-t-35"> <div class="col-6"> <small>Email Address: </small> <input type="email" name="email_address" value="' + user.email_address + '" class="form-control" required> </div><div class="col-6"> <small>Role: </small> <select name="role" class="form-control" required ' + (user.role==="me" ? "disabled" : "") + '> <option value="admin" ' + (user.role==="admin" ? "selected" : "") + '>Admin</option> <option value="user" ' + (user.role==="user" ? "selected" : "") + '>User</option> </select> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save changes</button> </div></div></form> </div><div class="tab-pane container" id="userPassword' + user.id + '"> <form action="../../controllers/admin/EditPassword.php" class="editUserPassword" method="post"> <input type="hidden" name="id" value="' + user.id + '"> <div class="row"> <div class="col-12"> <h3 class="p-t-35"> <h3><span class="fa fa-lock"></span> Change Password</h3> </div></div><hr> <div class="row"> <div class="col-3"></div><div class="col-6"> <small>Current Password <span class="text-danger">*</span></small> <input type="password" name="currentPassword" class="form-control" required> </div></div><div class="row"> <div class="col-3"></div><div class="col-6"> <small>New Password <span class="text-danger">*</span></small> <input type="password" name="password" class="form-control" required> </div></div><div class="row"> <div class="col-3"></div><div class="col-6"> <small>Confirm New Password <span class="text-danger">*</span></small> <input type="password" name="confirm_password" class="form-control" required> </div></div><div class="row p-t-35"> <div class="col-12 d-flex justify-content-center"> <button type="submit" class="btn btn-success">Save</button> </div></div></form> </div></div></div><div class="modal-footer"> <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
 				});
 				$(".editUser").on('submit', function(e) {
 					e.preventDefault();
@@ -461,18 +472,18 @@ $(document).ready(function() {
 					});
 					request.done(function(response, textStatus, jqXHR) {
 						if (response === "ok") {
-							$("#flash-message").empty().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
+							$("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
 							$modal.modal('toggle');
 							$('body').removeClass('modal-open');
 							$('.modal-backdrop').remove();
 							$('body').css('padding-right',0);
 							getUser(userData);
 						} else if (response === "usernameTaken") {
-							$("#flash-message").empty().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);	
+							$("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);	
 						} else if (response === "emailTaken") {
-							$("#flash-message").empty().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);	
+							$("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Email address already taken.").delay( 5000 ).slideUp(300);	
 						} else if (response === "err") {
-							$("#flash-message").empty().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
+							$("#flash-message").empty().removeClass().addClass("alert alert-info").show().append("No changes for the user.").delay( 5000 ).slideUp(300);
 							$modal.modal('toggle');
 							$('body').removeClass('modal-open');
 							$('.modal-backdrop').remove();
@@ -480,7 +491,7 @@ $(document).ready(function() {
 						}
 					});
 					request.fail(function(jqXHR, textStatus, errorThrown) {
-						$("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+						$("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
 					});
 				});
                 $(".editUserPassword").on('submit', function(e) {
@@ -495,28 +506,36 @@ $(document).ready(function() {
                         type: 'POST',
                         data: {
                             id: $form.find("input[name='id']").val(),
+                            currentPassword: $form.find("input[name='currentPassword']").val(),
                             password: $form.find("input[name='password']").val(),
+                            confirm_password: $form.find("input[name='confirm_password']").val(),
                         },
                     });
                     request.done(function(response, textStatus, jqXHR) {
                         if (response === "ok") {
-                            $("#flash-message").empty().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                            $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user password successful!").delay( 5000 ).slideUp(300);
+                            $form.find("input[name='currentPassword']").val("");
                             $form.find("input[name='password']").val("");
+                            $form.find("input[name='confirm_password']").val("");
                             $modal.modal('toggle');
                             $('body').removeClass('modal-open');
                             $('.modal-backdrop').remove();
                             $('body').css('padding-right',0);
                             getUser(userData);
+                        } else if (response === "err") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong current password.").delay( 5000 ).slideUp(300);
+                        } else if (response === "confirm") {
+                            $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append("Error changing password. Wrong confirmation password.").delay( 5000 ).slideUp(300);
                         }
                     });
                     request.fail(function(jqXHR, textStatus, errorThrown) {
-                        $("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+                        $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
                     });
                 });
 			}
         });
         requestUser.fail(function(jqXHR, textStatus, errorThrown) {
-        	$("#flash-message").empty().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
+        	$("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
         });
 	}
 });

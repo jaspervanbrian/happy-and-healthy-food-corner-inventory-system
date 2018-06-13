@@ -17,6 +17,10 @@ $(document).ready(function() {
     getMainInventory(data);
     currentPage = 1;
 
+    $('#searchKeyword').bind('keypress keydown keyup', function(e){
+        if(e.keyCode == 13) { e.preventDefault(); }
+    });
+    
     $("#searchKeyword").on('keyup', function(e){
         data = {
             type: $("#type").val(),
@@ -346,7 +350,11 @@ $(document).ready(function() {
                         getThisMonth(thisMonthData);
                     });
 
-                    $("#reference_keyword_search" + stock.id).on('keyup', function() {
+                    $("#reference_keyword_search" + stock.id).on('keyup', function(e) {
+                        if(e.keyCode == 13) {
+                            e.preventDefault();
+                            return false;
+                        }
                         thisMonthData = {
                             stock_id: stock.id,
                             type_search: $("#type_search" + stock.id).val(),
@@ -1023,7 +1031,11 @@ $(document).ready(function() {
                     };
                     getThisSpoilage(stock_spoilage);
 
-                    $("#spoilage_reference" + stock.id).on('keyup', function() {
+                    $("#spoilage_reference" + stock.id).on('keyup', function(e) {
+                        if(e.keyCode == 13) {
+                            e.preventDefault();
+                            return false;
+                        }
                         stock_spoilage = {
                             stock_id: stock.id,
                             spoilage_reference: $("#spoilage_reference" + stock.id).val(),
