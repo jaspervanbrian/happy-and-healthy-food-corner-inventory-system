@@ -125,6 +125,16 @@ class User
                 $stmt->bindParam(":id", $id);
                 $stmt->execute();
             }
+            if ($id == $_SESSION['user']['id']) {
+                $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
+                $stmt->bindParam(':id', $id);
+                $stmt->execute();
+                $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $_SESSION['user']['name'] = $user['name'];
+                $_SESSION['user']['username'] = $user['username'];
+                $_SESSION['user']['email_address'] = $user['email_address'];
+                $_SESSION['user']['role'] = $user['role'];
+            }
             return true;
         }
     }

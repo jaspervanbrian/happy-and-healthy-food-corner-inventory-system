@@ -2,12 +2,12 @@
 
 session_start();
 if (isset($_SESSION['user'])) {
-	if ($_SESSION['user']['role'] === "delivery") {
+	if ($_SESSION['user']['role'] === "admin") {
+		header('Location: ../views/admin/dashboard.php');
+	} else if ($_SESSION['user']['role'] === "delivery") {
 		header('Location: ../views/delivery/dashboard.php');
 	} else if ($_SESSION['user']['role'] === "purchasing") {
 		header('Location: ../views/purchasing/dashboard.php');
-	} else if ($_SESSION['user']['role'] === "systemadmin") {
-		header('Location: ../views/systemadmin/dashboard.php');
 	}
 } else {
 	header('Location: ../../../index.php');
@@ -46,6 +46,12 @@ if (isset($_SESSION['user'])) {
 		<li class="nav-item">
 			<a class="nav-link active" id="inventory-tab" data-toggle="tab" href="#inventory"><h5><span class="fa fa-list"></span> Inventory</h5></a>
 		</li>
+		<li class="nav-item">
+			<a class="nav-link" id="users-tab" data-toggle="tab" href="#users"><h5><span class="fa fa-users"></span> Users</h5></a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" id="archives-tab" data-toggle="tab" href="#archives"><h5><span class="fa fa-archive"></span> Archives</h5></a>
+		</li>
 	</ul>
 
 	<div class="tab-content">
@@ -64,6 +70,9 @@ if (isset($_SESSION['user'])) {
 					<div class="col-6">
 						<input type="text" class="form-control" name="searchKeyword" id="searchKeyword" placeholder="Enter keyword here...">
 					</div>
+					<div class="col-2">
+						<button type="button" data-toggle="modal" data-target="#add-item" class="btn btn-outline-success btn-block"><span class="fa fa-plus"></span> Add Stock</button>
+					</div>
 				</div>
 			</form>
 			<div class="row">
@@ -76,6 +85,52 @@ if (isset($_SESSION['user'])) {
 					
 				</div>
 			</div>
+		</div>
+		<div class="tab-pane container-fluid fade" id="users">
+			<div class="row m-t-35">
+				<div class="col-2">
+					<ul class="nav nav-pills flex-column">
+						<li class="nav-item">
+							<a class="nav-link active" data-toggle="pill" href="#adminrole">Admins</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="pill" href="#userrole">Users</a>
+						</li>
+					</ul>
+					<button class="btn btn-outline-success btn-block m-t-35" data-toggle="modal" data-target="#addUser"><span class="fa fa-plus"></span> Add User</button>
+				</div>
+				<div class="col-10">
+					<div class="tab-content">
+						<div class="tab-pane fade show active" id="adminrole">
+							<div class="row">
+								<div class="col-12" id="adminList">
+									
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12" id="adminListPagination">
+									
+								</div>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="userrole">
+							<div class="row">
+								<div class="col-12" id="userList">
+									
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12" id="userListPagination">
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="tab-pane container fade" id="archives">
+			
 		</div>
 	</div>
 
@@ -186,6 +241,171 @@ if (isset($_SESSION['user'])) {
 			</div>
 		</div>
 	</div>
+	<div>
+		<div class="modal fade" id="add-item" tabindex="-1" role="dialog" aria-labelledby="add-itemModal" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="add-itemModal">Add stock</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form action="../../controllers/admin/AddStock.php" method="POST">
+							<div class="row">
+								<div class="col-12">
+									<h3>Stock Details</h3>
+								</div>
+							</div>
+							<hr>
+							<div class="row p-t-35">
+								<div class="col-6"> 
+									<small>Stock name/brand: <span class="text-danger">*</span></small> 
+									<input type="text" name="name" class="form-control" required> 
+								</div>
+								<div class="col-6">
+									<small>Category: <span class="text-danger">*</span></small> 
+									<select name="category" class="form-control" required>
+										<option value="Meat">Meat</option>
+										<option value="Vegetables">Vegetables</option>
+										<option value="Packaging">Packaging</option>
+										<option value="Grocery">Grocery</option>
+										<option value="Rice">Rice</option>
+										<option value="Sauce">Sauce</option>
+										<option value="Fruits">Fruits</option>
+									</select>
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-6"> 
+									<small>Initial Quantity: <span class="text-danger">*</span></small> 
+									<input type="number" min="0.0001" step="any" name="current_qty" class="form-control" required> 
+								</div>
+								<div class="col-6">
+									<small>Unit: <span class="text-danger">*</span></small> 
+									<select name="unit" class="form-control" required>
+										<option value="gallons">gallons</option>
+										<option value="grams">grams</option>
+										<option value="kgs">kgs</option>
+										<option value="liters">liters</option>
+										<option value="pack">pack</option>
+										<option value="pieces">pieces</option>
+										<option value="oz">oz</option>
+									</select>
+								</div>
+							</div>
+							<hr>
+							<div class="row">
+								<div class="col-6">
+									<small>Price (PHP): <span class="text-danger">*</span></small> 
+									<input type="number" min="0.0001" step="any" name="price" class="form-control" required>
+								</div>
+							</div>
+							<div class="row m-t-35">
+								<div class="col-6">
+									<small>Supplier: <span class="text-danger">*</span></small> 
+									<input type="text" name="supplier" class="form-control" required>
+								</div>
+								<div class="col-6">
+									<small>Supplier Location: <span class="text-danger">*</span></small> 
+									<input type="text" name="supplier_location" class="form-control" required>
+								</div>
+							</div>
+							<div class="row m-t-35">
+								<div class="col-6">
+									<small>Low Threshold <span class="text-danger">*</span></small>
+									<input type="number" step="any" min="0.0001" class="form-control" name="low_threshold" required>
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-12 d-flex justify-content-center"> 
+									<button type="submit" class="btn btn-success">Add Stock</button>
+								 </div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="addUserModal" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addUserModal">Add User</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> 
+					</div>
+					<div class="modal-body">
+						<form action="../../controllers/admin/AddUser.php" id="addUserForm" method="post">
+							<div class="row">
+								<div class="col-12">
+									<h3>User Details</h3>
+								</div>
+							</div>
+							<hr>
+							<div class="row">
+								<div class="col-6"> 
+									<small>Name: <span class="text-danger">*</span></small> 
+									<input type="text" name="name" class="form-control" required> 
+								</div>
+								<div class="col-6"> 
+									<small>Username: <span class="text-danger">*</span></small> 
+									<input type="text" name="username" class="form-control" required> 
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-6"> 
+									<small>Email Address: <span class="text-danger">*</span></small> 
+									<input type="email" name="email_address" class="form-control" required> 
+								</div>
+								<div class="col-6"> 
+									<small>Role: <span class="text-danger">*</span></small> 
+									<select name="role" class="form-control" required> 
+										<option value="admin">Admin</option> 
+										<option value="user">User</option> 
+									</select> 
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-6">
+									<small>Password <span class="text-danger">*</span></small>
+									<input type="password" name="password" id="" class="form-control">
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-6">
+									<small>Security Question <span class="text-danger">*</span></small>
+									<select name="security_question" class="form-control" required>
+										<option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+										<option value="Where are you born?">Where were you born?</option>
+										<option value="What was the year you graduated from elementary?">What was the year you graduated from elementary?</option>
+									</select>
+								</div>
+								<div class="col-6">
+									<small>Answer: <span class="text-danger">*</span></small>
+									<input type="text" name="answer" class="form-control" required>
+								</div>
+							</div>
+							<div class="row p-t-35">
+								<div class="col-12 d-flex justify-content-center"> 
+									<button type="submit" class="btn btn-success">Add user</button> 
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer"> 
+						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button> 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 <!--===============================================================================================-->	
 	<script src="../../assets/vendor/jquery/jquery-3.3.1.min.js"></script>
 <!--===============================================================================================-->

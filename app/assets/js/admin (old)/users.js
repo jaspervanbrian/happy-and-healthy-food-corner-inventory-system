@@ -192,10 +192,15 @@ $(document).ready(function() {
         });
         request.done(function(response, textStatus, jqXHR) {
             if (response === "ok") {
-                $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Add user successful!").delay( 300 ).slideUp(300);
-                setTimeout(function() {
-                    location.reload();
-                }, 800);
+                $("#flash-message").empty().removeClass().addClass("alert alert-success").show().append("Update user successful!").delay( 5000 ).slideUp(300);
+                $modal.modal('toggle');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                $('body').css('padding-right',0);
+                getAdminPages();
+                getAdmin(adminData);
+                getUserPages();
+                getUser(userData);
             } else if (response === "usernameTaken") {
                 $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
             } else if (response === "emailTaken") {
