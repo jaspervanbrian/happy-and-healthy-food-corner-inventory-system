@@ -7,15 +7,15 @@ use App\Database\Connection;
 /**
  * summary
  */
-class Stock
+class Supplier
 {
 	private $connection;
 
-    public function __construct()
-    {
-    	$this->connection = new Connection();    
-    }
-    public function getInventory($type, $keyword='', $page, $orderby, $step, $is_deleted)
+	public function __construct()
+	{
+		$this->connection = new Connection();    
+	}
+	public function getSupplier($type, $keyword='', $page, $orderby, $step, $is_deleted)
     {
         $is_deleted = (int)$is_deleted;
     	$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -69,7 +69,7 @@ class Stock
 			}
     	}
     }
-    public function getInventoryPages($type, $keyword='', $is_deleted)
+    public function getSupplierPages($type, $keyword='', $is_deleted)
     {
         $is_deleted = (int)$is_deleted;
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -100,7 +100,7 @@ class Stock
             return $stmt->rowCount();
         }
     }
-    public function create($name, $category, $unit, $current_qty, $price, $supplier, $low_threshold)
+    public function create($name, $category, $unit, $current_qty, $price, $supplier, $supplier_location, $low_threshold)
     {
         $name = trim($name);
         $category = trim($category);
@@ -140,85 +140,8 @@ class Stock
         $stmt->execute();
         return true;
     }
-    public function updatePrice($stock_id, $stock_price)
-    {
-        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET price = :price, last_price_changed = NOW() WHERE id = :id");
-        $stmt->bindParam(":id", $stock_id);
-        $stmt->bindParam(":price", $stock_price);
-        $stmt->execute();
-        return true;
-    }
-    public function updateSupplier($stock_id, $supplier)
-    {
-        $stmt = $this->connection->db_connection->prepare("SELECT * FROM suppliers WHERE id = :supplier");
-        $stmt->bindParam(":supplier", $supplier);
-        $stmt->execute();
-        if ($stmt->rowCount() > 0) {
-            $supplier = $stmt->fetch();
-            $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET supplier = :supplier, supplier_location = :supplier_location, last_supplier_changed = NOW() WHERE id = :id");
-            $stmt->bindParam(":id", $stock_id);
-            $stmt->bindParam(":supplier", $supplier);
-            $stmt->bindParam(":supplier_location", $ssupplier_location);
-            $supplier = $supplier['name'];
-            $supplier_location = $supplier['location'];
-            $stmt->execute();
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public function updateDetails($stock_id, $name, $former_name, $unit, $category, $current_qty, $low_threshold)
-    {
-        $status = "";
-        $current_qty = (float)$current_qty;
-        $low_threshold = (float)$low_threshold;
-
-        if ($current_qty <= 0) {
-            $status = "Needs Replenishment";
-        } else if ($current_qty > 0 && $current_qty <= $low_threshold) {
-            $status = "Low Stock";
-        } else if ($current_qty > $low_threshold) {
-            $status = "High Stock";
-        }
-        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET name = :name, former_name = :former_name, unit = :unit, category = :category, status = :status, low_threshold = :low_threshold WHERE id = :id");
-        $stmt->bindParam(":id", $stock_id);
-        $stmt->bindParam(":name", $name);
-        $stmt->bindParam(":former_name", $former_name);
-        $stmt->bindParam(":unit", $unit);
-        $stmt->bindParam(":category", $category);
-        $stmt->bindParam(":status", $status);
-        $stmt->bindParam(":low_threshold", $low_threshold);
-        $stmt->execute();
-        return true;
-    }
-    public function destroy($stock_id)
-    {
-        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET is_deleted = :deleted WHERE id = :stock_id");
-        // DELETE FROM stocks WHERE id = :stock_id
-        $deleted = 1;
-        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_INT);
-        $stmt->bindParam(":stock_id", $stock_id);
-        $stmt->execute();
-        return true;
-    }
-    public function recover($stock_id)
-    {
-        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET is_deleted = :deleted WHERE id = :stock_id");
-        // DELETE FROM stocks WHERE id = :stock_id
-        $deleted = 0;
-        $stmt->bindParam(":deleted", $deleted, \PDO::PARAM_INT);
-        $stmt->bindParam(":stock_id", $stock_id);
-        $stmt->execute();
-        return true;
-    }
-    public function delete($stock_id)
-    {
-        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("DELETE FROM stocks WHERE id = :stock_id");
-        $stmt->bindParam(":stock_id", $stock_id);
-        $stmt->execute();
-        return true;
+    public function getAll() {
+    	$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    	$stmt = $this->connection->db_connection->prepare("SELECT * FROM suppliers");
     }
 }
