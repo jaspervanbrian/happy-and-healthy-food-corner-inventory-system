@@ -44,13 +44,16 @@ if (isset($_SESSION['user'])) {
 	?>
 	<ul class="nav nav-tabs">
 		<li class="nav-item">
-			<a class="nav-link active" id="inventory-tab" data-toggle="tab" href="#inventory"><h5><span class="fa fa-list"></span> Inventory</h5></a>
+			<a class="nav-link active" id="inventory-tab" data-toggle="tab" href="#inventory"><h5><span class="fa fa-list"></span> Items Masterdata</h5></a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" id="users-tab" data-toggle="tab" href="#users"><h5><span class="fa fa-users"></span> Users</h5></a>
+			<a class="nav-link" id="users-tab" data-toggle="tab" href="#users"><h5><span class="fa fa-users"></span> Users Masterdata</h5></a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" id="archives-tab" data-toggle="tab" href="#archives"><h5><span class="fa fa-archive"></span> Archives</h5></a>
+			<a class="nav-link" id="suppliers-tab" data-toggle="tab" href="#suppliers"><h5><span class="fa fa-industry"></span> Suppliers Masterdata</h5></a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" id="archives-tab" data-toggle="tab" href="#archives"><h5><span class="fa fa-archive"></span> Archived Items Masterdata</h5></a>
 		</li>
 	</ul>
 
@@ -129,6 +132,36 @@ if (isset($_SESSION['user'])) {
 				</div>
 			</div>
 		</div>
+		<div class="tab-content">
+		<div class="tab-pane container fade" id="suppliers">
+			<form action="../../controllers/admin/Suppliers.php" method="post" id="searchSupplierForm">
+				<div class="form-group row p-t-20">
+					<label for="searchBy" class="d-flex align-items-center">Search By:</label>
+					<div class="col-3">
+						<select name="supplier_type" id="supplier_type" class="form-control">
+							<option value="name">Name</option>
+							<option value="location">Location</option>
+						</select>
+					</div>
+					<div class="col-6">
+						<input type="text" class="form-control" name="supplierSearchKeyword" id="supplierSearchKeyword" placeholder="Enter keyword here...">
+					</div>
+					<div class="col-2">
+						<button type="button" data-toggle="modal" data-target="#add-supplier" class="btn btn-outline-success btn-block"><span class="fa fa-plus"></span> Add Supplier</button>
+					</div>
+				</div>
+			</form>
+			<div class="row">
+				<div class="col-12" id="supplierList">
+					
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12 d-flex justify-content-center" id="supplierPagination">
+					
+				</div>
+			</div>
+		</div>
 		<div class="tab-pane container fade" id="archives">
 			
 		</div>
@@ -139,6 +172,10 @@ if (isset($_SESSION['user'])) {
   	<div id="stockModals"></div>
 	<div id="adminModals"></div>
 	<div id="userModals"></div>
+	<div id="purchasingModals"></div>
+	<div id="deliveryModals"></div>
+	<div id="systemadminModals"></div>
+	<div id="delete_supplierModals"></div>
 
 
 	<div>
@@ -305,11 +342,7 @@ if (isset($_SESSION['user'])) {
 							<div class="row m-t-35">
 								<div class="col-6">
 									<small>Supplier: <span class="text-danger">*</span></small> 
-									<input type="text" name="supplier" class="form-control" required>
-								</div>
-								<div class="col-6">
-									<small>Supplier Location: <span class="text-danger">*</span></small> 
-									<input type="text" name="supplier_location" class="form-control" required>
+									<select name="supplier" id="supplier_list" class="form-control supplier_list"></select>
 								</div>
 							</div>
 							<div class="row m-t-35">
@@ -422,8 +455,9 @@ if (isset($_SESSION['user'])) {
 	</script>
 <!--===============================================================================================-->
 	<script src="../../../node_modules/chart.js/dist/Chart.bundle.min.js"></script>
-	<script src="../../assets/js/admin/inventory.js"></script>
-	<script src="../../assets/js/admin/users.js"></script>
+	<script src="../../assets/js/systemadmin/inventory.js"></script>
+	<script src="../../assets/js/systemadmin/users.js"></script>
+	<script src="../../assets/js/systemadmin/supplier.js"></script>
 <!--===============================================================================================-->
 
   	<?php
