@@ -16,5 +16,5 @@ if (isset($_POST['stock_id'])) {
 	} else {
 		$_SESSION['destroy'] = "err";
 	}
-	header('Location: ../../views/admin/dashboard.php');
+	header('Location: ../../views/systemadmin/dashboard.php');
 }

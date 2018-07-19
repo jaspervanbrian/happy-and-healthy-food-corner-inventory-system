@@ -77,7 +77,7 @@ class Supplier
             $stmt->execute();
             return $stmt->rowCount();
         } else {
-            $stmt = $this->connection->db_connection->prepare("SELECT * FROM suppliers WHERE is_deleted = :is_deleted");
+            $stmt = $this->connection->db_connection->prepare("SELECT * FROM suppliers");
             $stmt->execute();
             return $stmt->rowCount();
         }
@@ -92,14 +92,14 @@ class Supplier
             return false;
         }
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("INSERT INTO suppliers (name, location, contact_number) VALUES (:name, :location, :contact_number");
+        $stmt = $this->connection->db_connection->prepare("INSERT INTO suppliers (name, location, contact_number) VALUES (:name, :location, :contact_number)");
         $stmt->bindParam(":name", $name);
         $stmt->bindParam(":location", $location);
         $stmt->bindParam(":contact_number", $contact_number);
         $stmt->execute();
         return true;
     }
-    public function delete($id)
+    public function destroy($id)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $stmt = $this->connection->db_connection->prepare("DELETE FROM suppliers WHERE id = :id");

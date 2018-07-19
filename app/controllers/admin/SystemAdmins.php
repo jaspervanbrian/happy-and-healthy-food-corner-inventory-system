@@ -9,6 +9,6 @@ use App\Models\User;
 
 $users = new User();
 
-if (isset($_POST['page'])) {
-	echo json_encode($users->adminList((int)$_POST['page']));
+if (isset($_SESSION['user']) && isset($_POST['page'])) {
+	echo json_encode($users->systemAdminList($_SESSION['user']['id'], (int)$_POST['page']));
 }

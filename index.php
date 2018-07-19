@@ -2,10 +2,14 @@
 	session_start();
 	if (isset($_SESSION['user'])) {
 		if ($_SESSION['user']['role'] === "admin") {
-			header('Location: app/views/admin/dashboard.php');
-		} else if ($_SESSION['user']['role'] === "user") {
-			header('Location: app/views/user/home.php');
-		}
+    		header('Location: ../views/admin/dashboard.php');
+    	} else if ($_SESSION['user']['role'] === "purchasing") {
+    		header('Location: ../views/purchasing/dashboard.php');
+    	} else if ($_SESSION['user']['role'] === "delivery") {
+    		header('Location: ../views/delivery/dashboard.php');
+    	} else if ($_SESSION['user']['role'] === "systemadmin") {
+    		header('Location: ../views/systemadmin/dashboard.php');
+    	}
 	}
 ?>
 <!DOCTYPE html>

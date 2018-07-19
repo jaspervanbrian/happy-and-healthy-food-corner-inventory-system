@@ -10,5 +10,5 @@ use App\Models\User;
 $users = new User();
 
 if (isset($_POST['page'])) {
-	echo json_encode($users->adminList((int)$_POST['page']));
+	echo json_encode($users->purchasingList((int)$_POST['page']));
 }

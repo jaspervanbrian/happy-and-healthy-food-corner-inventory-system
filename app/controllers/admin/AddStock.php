@@ -23,5 +23,5 @@ if (isset($_POST['name']) &&
 	} else {
 		$_SESSION['add'] = "err";
 	}
-	header('Location: ../../views/admin/dashboard.php');
+	header('Location: ../../views/systemadmin/dashboard.php');
 }

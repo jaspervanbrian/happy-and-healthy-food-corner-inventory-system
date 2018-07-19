@@ -23,6 +23,10 @@ class User
         $username = trim($username);
         $email_address = trim($email_address);
 
+        if ($name === "" || $username === "" || $email_address === "") {
+            return false;
+        }
+        
         $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE username = :username");
         $stmt->bindParam(":username", $username);
         $stmt->execute();
@@ -148,7 +152,7 @@ class User
         $stmt->execute();
         return $stmt->rowCount();
     }
-    public function adminList($current_admin_id, $page)
+    public function adminList($page)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role ORDER BY id ASC LIMIT :index, :upTo");
@@ -161,11 +165,6 @@ class User
         $upTo = 7;
         $stmt->execute();
         $admins = $stmt->fetchAll();
-        foreach ($admins as &$admin) {
-            if ($current_admin_id === $admin['id']) {
-                $admin['role'] = "me";
-            }
-        }
         return $admins;
     }
     public function userListPaginate()
@@ -192,5 +191,85 @@ class User
         $stmt->execute();
         $users = $stmt->fetchAll();
         return $users;
+    }
+    public function purchasingListPaginate()
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role");
+        $stmt->bindParam(":role", $role);
+
+        $role = "purchasing";
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+    public function purchasingList($page)
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role ORDER BY id ASC LIMIT :index, :upTo");
+        $stmt->bindParam(":role", $role);
+        $stmt->bindParam(":index", $index, \PDO::PARAM_INT);
+        $stmt->bindParam(":upTo", $upTo, \PDO::PARAM_INT);
+
+        $role = "purchasing";
+        $index = ($page - 1) * 7;
+        $upTo = 7;
+        $stmt->execute();
+        $users = $stmt->fetchAll();
+        return $users;
+    }
+    public function deliveryListPaginate()
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role");
+        $stmt->bindParam(":role", $role);
+
+        $role = "delivery";
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+    public function deliveryList($page)
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role ORDER BY id ASC LIMIT :index, :upTo");
+        $stmt->bindParam(":role", $role);
+        $stmt->bindParam(":index", $index, \PDO::PARAM_INT);
+        $stmt->bindParam(":upTo", $upTo, \PDO::PARAM_INT);
+
+        $role = "delivery";
+        $index = ($page - 1) * 7;
+        $upTo = 7;
+        $stmt->execute();
+        $users = $stmt->fetchAll();
+        return $users;
+    }
+    public function systemAdminListPaginate()
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role");
+        $stmt->bindParam(":role", $role);
+
+        $role = "systemadmin";
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+    public function systemAdminList($current_admin_id, $page)
+    {
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE role = :role ORDER BY id ASC LIMIT :index, :upTo");
+        $stmt->bindParam(":role", $role);
+        $stmt->bindParam(":index", $index, \PDO::PARAM_INT);
+        $stmt->bindParam(":upTo", $upTo, \PDO::PARAM_INT);
+
+        $role = "systemadmin";
+        $index = ($page - 1) * 7;
+        $upTo = 7;
+        $stmt->execute();
+        $systemAdmins = $stmt->fetchAll();
+        foreach ($systemAdmins as &$systemAdmin) {
+            if ($current_admin_id === $systemAdmin['id']) {
+                $systemAdmin['role'] = "me";
+            }
+        }
+        return $systemAdmins;
     }
 }

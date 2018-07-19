@@ -155,12 +155,12 @@ class Stock
         $stmt->execute();
         if ($stmt->rowCount() > 0) {
             $supplier = $stmt->fetch();
+            $supplier_name = $supplier['name'];
+            $supplier_location = $supplier['location'];
             $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET supplier = :supplier, supplier_location = :supplier_location, last_supplier_changed = NOW() WHERE id = :id");
             $stmt->bindParam(":id", $stock_id);
-            $stmt->bindParam(":supplier", $supplier);
-            $stmt->bindParam(":supplier_location", $ssupplier_location);
-            $supplier = $supplier['name'];
-            $supplier_location = $supplier['location'];
+            $stmt->bindParam(":supplier", $supplier_name);
+            $stmt->bindParam(":supplier_location", $supplier_location);
             $stmt->execute();
             return true;
         } else {

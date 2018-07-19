@@ -97,7 +97,13 @@ if (isset($_SESSION['user'])) {
 							<a class="nav-link active" data-toggle="pill" href="#adminrole">Admins</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" data-toggle="pill" href="#userrole">Users</a>
+							<a class="nav-link" data-toggle="pill" href="#purchasingrole">Purchasing</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="pill" href="#deliveryrole">Delivery</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="pill" href="#systemAdminrole">System Admins</a>
 						</li>
 					</ul>
 					<button class="btn btn-outline-success btn-block m-t-35" data-toggle="modal" data-target="#addUser"><span class="fa fa-plus"></span> Add User</button>
@@ -116,14 +122,38 @@ if (isset($_SESSION['user'])) {
 								</div>
 							</div>
 						</div>
-						<div class="tab-pane fade" id="userrole">
+						<div class="tab-pane fade" id="purchasingrole">
 							<div class="row">
-								<div class="col-12" id="userList">
+								<div class="col-12" id="purchasingList">
 									
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-12" id="userListPagination">
+								<div class="col-12" id="purchasingListPagination">
+									
+								</div>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="deliveryrole">
+							<div class="row">
+								<div class="col-12" id="deliveryList">
+									
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12" id="deliveryListPagination">
+									
+								</div>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="systemAdminrole">
+							<div class="row">
+								<div class="col-12" id="systemAdminList">
+									
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12" id="systemAdminListPagination">
 									
 								</div>
 							</div>
@@ -132,7 +162,6 @@ if (isset($_SESSION['user'])) {
 				</div>
 			</div>
 		</div>
-		<div class="tab-content">
 		<div class="tab-pane container fade" id="suppliers">
 			<form action="../../controllers/admin/Suppliers.php" method="post" id="searchSupplierForm">
 				<div class="form-group row p-t-20">
@@ -174,7 +203,7 @@ if (isset($_SESSION['user'])) {
 	<div id="userModals"></div>
 	<div id="purchasingModals"></div>
 	<div id="deliveryModals"></div>
-	<div id="systemadminModals"></div>
+	<div id="systemAdminModals"></div>
 	<div id="delete_supplierModals"></div>
 
 
@@ -226,7 +255,7 @@ if (isset($_SESSION['user'])) {
 										<div class="col-6"> 
 											<small>Role: </small> 
 											<select name="role" class="form-control" required disabled> 
-												<option value="admin">Admin</option>
+												<option value="systemadmin">System Admin</option>
 											</select> 
 										</div>
 									</div>
@@ -400,7 +429,9 @@ if (isset($_SESSION['user'])) {
 									<small>Role: <span class="text-danger">*</span></small> 
 									<select name="role" class="form-control" required> 
 										<option value="admin">Admin</option> 
-										<option value="user">User</option> 
+										<option value="purchasing">Purchasing</option> 
+										<option value="delivery">Delivery</option> 
+										<option value="systemadmin">System Admin</option>
 									</select> 
 								</div>
 							</div>
@@ -434,6 +465,52 @@ if (isset($_SESSION['user'])) {
 					<div class="modal-footer"> 
 						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button> 
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="add-supplier" tabindex="-1" role="dialog" aria-labelledby="add-supplierModal" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="add-supplierModal">Add Supplier</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="../../controllers/admin/AddSupplier.php" id="addSupplierForm" method="post">
+						<div class="row">
+							<div class="col-12">
+								<h3>Supplier Details</h3>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-6"> 
+								<small>Name: <span class="text-danger">*</span></small> 
+								<input type="text" name="name" class="form-control" required> 
+							</div>
+							<div class="col-6"> 
+								<small>Location: <span class="text-danger">*</span></small> 
+								<input type="text" name="location" class="form-control" required> 
+							</div>
+						</div>
+						<div class="row p-t-35">
+							<div class="col-6"> 
+								<small>Contact Number: <span class="text-danger">*</span></small> 
+								<input type="text" name="contact_number" class="form-control" required> 
+							</div>
+						</div>
+						<div class="row p-t-35">
+							<div class="col-12 d-flex justify-content-center"> 
+								<button type="submit" class="btn btn-success">Add Supplier</button> 
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
@@ -596,6 +673,48 @@ if (isset($_SESSION['user'])) {
   	<?php
   			}
 			unset($_SESSION['addUser']);
+  		}
+  		if (isset($_SESSION['destroySupplier'])) {
+  			if ($_SESSION['destroySupplier'] === "ok") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-success").show().append("Delete supplier successful!").delay( 5000 ).slideUp(300);	
+					$("#suppliers-tab").tab('show');
+				});
+			</script>
+  	<?php
+  			} else if ($_SESSION['destroySupplier'] === "err") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error deleting desired supplier.").delay( 5000 ).slideUp(300);	
+					$("#suppliers-tab").tab('show');
+				});
+			</script>
+  	<?php
+  			}
+			unset($_SESSION['destroySupplier']);
+  		}
+  		if (isset($_SESSION['addSupplier'])) {
+  			if ($_SESSION['addSupplier'] === "ok") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-success").show().append("Add supplier successful!").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			} else if ($_SESSION['addSupplier'] === "err") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error adding desired supplier.").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			}
+			unset($_SESSION['addSupplier']);
   		}
   	?>
 </body>
