@@ -9,4 +9,8 @@ use App\Models\Particular;
 
 $particulars = new Particular();
 
-echo $particulars->thisMonthParticularPages($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search']);
+if(isset($_POST['from_date']) && isset($_POST['to_date'])) {
+	echo $particulars->thisMonthParticularPages($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], $_POST['from_date'], $_POST['to_date']);
+} else {
+	echo $particulars->thisMonthParticularPages($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], "", "");
+}

@@ -71,6 +71,8 @@ create table suppliers (
 
 insert into users (name, username,email_address,password,role,security_question,answer)
 values ('Admin', 'admin', 'admin@example.com', 'admin1234', 'admin', "What is your mother's maiden name?", "Admin");
+insert into users (name, username,email_address,password,role,security_question,answer)
+values ('System Admin', 'sysadmin', 'sysadmin@example.com', 'admin1234', 'systemadmin', "What is your mother's maiden name?", "Admin");
 
 select * from stocks;
 

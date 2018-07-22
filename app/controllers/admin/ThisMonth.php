@@ -9,7 +9,15 @@ use App\Models\Particular;
 
 $particulars = new Particular();
 if (isset($_POST['stock_id']) && isset($_POST['page']) && isset($_POST['type_search']) && isset($_POST['reference_keyword_search'])) {
-	echo json_encode($particulars->thisMonthParticular($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], (int)$_POST['page']));
+	if(isset($_POST['from_date']) && isset($_POST['to_date'])) {
+		echo json_encode($particulars->thisMonthParticular($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], (int)$_POST['page'], $_POST['from_date'], $_POST['to_date']));
+	} else {
+		echo json_encode($particulars->thisMonthParticular($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], (int)$_POST['page'], "", ""));
+	}
 } else {
-	echo json_encode($particulars->thisMonthParticular($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], 1));
+	if(isset($_POST['from_date']) && isset($_POST['to_date'])) {
+		echo json_encode($particulars->thisMonthParticular($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], 1, $_POST['from_date'], $_POST['to_date']));
+	} else {
+		echo json_encode($particulars->thisMonthParticular($_POST['stock_id'], $_POST['type_search'], $_POST['reference_keyword_search'], 1, "", ""));
+	}
 }
