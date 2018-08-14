@@ -8,7 +8,7 @@ class Connection
 		$server = "localhost";
 		$db = "happy_and_healthy";
 		$username = "root";
-		$password = "weedonthecouch1234";
+		$password = "";
 		$this->db_connection = new \PDO("mysql:host={$server};dbname={$db}", $username, $password);
 	}
 }

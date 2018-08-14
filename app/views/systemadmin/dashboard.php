@@ -344,10 +344,10 @@ if (isset($_SESSION['user'])) {
 								</div>
 							</div>
 							<div class="row p-t-35">
-								<div class="col-6"> 
-									<small>Initial Quantity: <span class="text-danger">*</span></small> 
-									<input type="number" min="0.0001" step="any" name="current_qty" class="form-control" required> 
-								</div>
+								<!-- <div class="col-6">  -->
+									<!-- <small>Initial Quantity: <span class="text-danger">*</span></small>  -->
+									<input type="hidden" min="0.0001" step="any" name="current_qty" class="form-control" value="0" required> 
+								<!-- </div> -->
 								<div class="col-6">
 									<small>Unit: <span class="text-danger">*</span></small> 
 									<select name="unit" class="form-control" required>
@@ -371,7 +371,9 @@ if (isset($_SESSION['user'])) {
 							<div class="row m-t-35">
 								<div class="col-6">
 									<small>Supplier: <span class="text-danger">*</span></small> 
-									<select name="supplier" id="supplier_list" class="form-control supplier_list"></select>
+									<select name="supplier" id="supplier_list" class="form-control supplier_list" required>
+										<option value=""></option>
+									</select>
 								</div>
 							</div>
 							<div class="row m-t-35">

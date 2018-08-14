@@ -28,8 +28,8 @@ class Supplier
                 $keyword =  "%".$keyword ."%";
             }
 
-            $index = ($page - 1)*6;
-            $upTo = 6;
+            $index = ($page - 1)*5;
+            $upTo = 5;
             $stmt->bindParam(':index', $index, \PDO::PARAM_INT);
             $stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
 			$stmt->bindParam(':keyword', $keyword);
@@ -45,8 +45,8 @@ class Supplier
     	} else {
     		$stmt = $this->connection->db_connection->prepare("SELECT * FROM suppliers ORDER BY {$orderby} {$step} LIMIT :index , :upTo");
 
-            $index = ($page - 1)*6;
-            $upTo = 6;
+            $index = ($page - 1)*5;
+            $upTo = 5;
             $stmt->bindParam(':index', $index, \PDO::PARAM_INT);
             $stmt->bindParam(':upTo', $upTo, \PDO::PARAM_INT);
 

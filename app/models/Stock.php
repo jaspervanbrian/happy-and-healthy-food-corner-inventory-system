@@ -123,7 +123,18 @@ class Stock
         } else if ($current_qty > $low_threshold) {
             $status = "High Stock";
         }
-        
+
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM suppliers WHERE id = :supplier");
+        $stmt->bindParam(":supplier", $supplier);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $supplier = $stmt->fetch();
+            $supplier_name = $supplier['name'];
+            $supplier_location = $supplier['location'];
+        } else {
+            return false;
+        }
+
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $stmt = $this->connection->db_connection->prepare("INSERT INTO stocks (name, category, unit, current_qty, price, supplier, supplier_location, status, is_deleted, low_threshold) VALUES (:name, :category, :unit, :current_qty, :price, :supplier, :supplier_location, :status, :is_deleted, :low_threshold)");
         $is_deleted = 0;
@@ -132,7 +143,7 @@ class Stock
         $stmt->bindParam(":unit", $unit);
         $stmt->bindParam(":current_qty", $current_qty);
         $stmt->bindParam(":price", $price);
-        $stmt->bindParam(":supplier", $supplier);
+        $stmt->bindParam(":supplier", $supplier_name);
         $stmt->bindParam(":supplier_location", $supplier_location);
         $stmt->bindParam(":status", $status);
         $stmt->bindParam(":is_deleted", $is_deleted, \PDO::PARAM_INT);
