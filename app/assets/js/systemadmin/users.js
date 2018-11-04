@@ -285,6 +285,10 @@ $(document).ready(function() {
                 getAdmin(adminData);
                 getPurchasingPages();
                 getPurchasing(purchasingData);
+                getDeliveryPages();
+                getDelivery(deliveryData);
+                getSystemAdminPages();
+                getSystemAdmin(systemAdminData);
             } else if (response === "usernameTaken") {
                 $("#flash-message").empty().removeClass().addClass("alert alert-warning").show().append("Username already taken.").delay( 5000 ).slideUp(300);    
             } else if (response === "emailTaken") {
