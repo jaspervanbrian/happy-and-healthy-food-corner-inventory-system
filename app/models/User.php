@@ -72,6 +72,25 @@ class User
         $stmt->execute();
         return true;
     }
+    public function systemAdminUpdatePassword($id, $password, $confirm_password)
+    {
+        if ($password !== $confirm_password) {
+            return "confirm";
+        }
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE id = :id");
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        if ($stmt->rowCount() <= 0) {
+            return "err";
+        }
+
+        $stmt = $this->connection->db_connection->prepare("UPDATE users SET password = :password WHERE id = :id");
+        $stmt->bindParam(":password", $password);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        return true;
+    }
     public function updateCredentials($id, $name, $username, $email_address, $role)
     {
         $name = trim($name);
