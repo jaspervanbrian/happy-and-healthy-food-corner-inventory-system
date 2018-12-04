@@ -204,6 +204,7 @@ if (isset($_SESSION['user'])) {
 	<div id="purchasingModals"></div>
 	<div id="deliveryModals"></div>
 	<div id="systemAdminModals"></div>
+	<div id="edit_supplierModals"></div>
 	<div id="delete_supplierModals"></div>
 
 
@@ -501,7 +502,7 @@ if (isset($_SESSION['user'])) {
 						<div class="row p-t-35">
 							<div class="col-6"> 
 								<small>Contact Number: <span class="text-danger">*</span></small> 
-								<input type="text" name="contact_number" class="form-control" required> 
+								<input type="number" name="contact_number" class="form-control" required> 
 							</div>
 						</div>
 						<div class="row p-t-35">
@@ -717,6 +718,26 @@ if (isset($_SESSION['user'])) {
   	<?php
   			}
 			unset($_SESSION['addSupplier']);
+  		}
+  		if (isset($_SESSION['editSupplier'])) {
+  			if ($_SESSION['editSupplier'] === "ok") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-success").show().append("Edit supplier successful!").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			} else if ($_SESSION['editSupplier'] === "err") {
+  	?>
+			<script>
+				$(document).ready(function() {
+					$("#flash-message").empty().addClass("alert alert-danger").show().append("Error edit desired supplier.").delay( 5000 ).slideUp(300);	
+				});
+			</script>
+  	<?php
+  			}
+			unset($_SESSION['editSupplier']);
   		}
   	?>
 </body>

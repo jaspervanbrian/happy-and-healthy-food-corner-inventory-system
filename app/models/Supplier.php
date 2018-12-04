@@ -99,6 +99,24 @@ class Supplier
         $stmt->execute();
         return true;
     }
+    public function edit($id, $name, $location, $contact_number)
+    {
+        $name = trim($name);
+        $location = trim($location);
+        $contact_number = trim($contact_number);
+
+        if ($name === "" || $location === "" || $contact_number === "") {
+            return false;
+        }
+        $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->connection->db_connection->prepare("UPDATE suppliers SET name = :name, location = :location, contact_number = :contact_number WHERE id = :id");
+        $stmt->bindParam(":id", $id);
+        $stmt->bindParam(":name", $name);
+        $stmt->bindParam(":location", $location);
+        $stmt->bindParam(":contact_number", $contact_number);
+        $stmt->execute();
+        return true;
+    }
     public function destroy($id)
     {
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
