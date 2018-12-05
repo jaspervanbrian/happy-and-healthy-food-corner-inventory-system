@@ -153,9 +153,12 @@ class Stock
     }
     public function updatePrice($stock_id, $stock_price)
     {
-        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET price = :price, last_price_changed = NOW() WHERE id = :id");
+        date_default_timezone_set("Asia/Manila");
+        $date = date("Y-m-d G:i:s");
+        $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET price = :price, last_price_changed = :date WHERE id = :id");
         $stmt->bindParam(":id", $stock_id);
         $stmt->bindParam(":price", $stock_price);
+        $stmt->bindParam(":date", $date);
         $stmt->execute();
         return true;
     }
@@ -165,13 +168,17 @@ class Stock
         $stmt->bindParam(":supplier", $supplier);
         $stmt->execute();
         if ($stmt->rowCount() > 0) {
+            date_default_timezone_set("Asia/Manila");
+            $date = date("Y-m-d G:i:s");
+            
             $supplier = $stmt->fetch();
             $supplier_name = $supplier['name'];
             $supplier_location = $supplier['location'];
-            $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET supplier = :supplier, supplier_location = :supplier_location, last_supplier_changed = NOW() WHERE id = :id");
+            $stmt = $this->connection->db_connection->prepare("UPDATE stocks SET supplier = :supplier, supplier_location = :supplier_location, last_supplier_changed = :date WHERE id = :id");
             $stmt->bindParam(":id", $stock_id);
             $stmt->bindParam(":supplier", $supplier_name);
             $stmt->bindParam(":supplier_location", $supplier_location);
+            $stmt->bindParam(":date", $date);
             $stmt->execute();
             return true;
         } else {

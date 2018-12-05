@@ -18,7 +18,7 @@ try {
 			echo "Invalid";
 		} else {
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($user['password'] === $_POST['password']) {
+			if(password_verify($_POST['password'], $user['password'])) {
 				$_SESSION['user'] = [
 					'id' => $user['id'],
 					'name' => $user['name'],

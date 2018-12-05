@@ -13,7 +13,7 @@ try {
 		$stmt = $connection->db_connection->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
 		$stmt->bindParam(':username', $username);
 		$username = $_POST['username'];
-		$new_password = $_POST['new_password'];
+		$new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
 		$stmt->execute();
 		if ($stmt->rowCount() <= 0) {
 			echo "Invalid";

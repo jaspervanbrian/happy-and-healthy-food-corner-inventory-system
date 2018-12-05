@@ -575,8 +575,11 @@ class Particular
 			$stmt->execute();
 			$next_id = $stmt->rowCount() + 1;
 			$supplier_reference = date('mdY') . "_" . $next_id;
+			
+			date_default_timezone_set("Asia/Manila");
+			$date = date("Y-m-d G:i:s");
 
-			$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, supplier_reference, `in`, `out`, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :type, :supplier_reference, :in, :out, :balance, :price_balance, NOW())");
+			$stmt = $this->connection->db_connection->prepare("INSERT INTO particulars (stock_id, user_id, type, supplier_reference, `in`, `out`, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :type, :supplier_reference, :in, :out, :balance, :price_balance, :date)");
 			$stmt->bindParam(":stock_id", $stock_id);
 			$stmt->bindParam(":user_id", $user_id);
 			$stmt->bindParam(":type", $type);
@@ -585,6 +588,7 @@ class Particular
 			$stmt->bindParam(":out", $out);
 			$stmt->bindParam(":balance", $current_qty);
 			$stmt->bindParam(":price_balance", $price_balance);
+			$stmt->bindParam(":date", $date);
 			$stmt->execute();
 			return true;
 		}
@@ -652,12 +656,16 @@ class Particular
 			$stmt->execute();
 			$price_balance = ($amount) * (float)$stock['price'];
 
-			$stmt = $this->connection->db_connection->prepare("INSERT INTO spoilages (stock_id, user_id, amount, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :amount, :balance, :price_balance, NOW())");
+			date_default_timezone_set("Asia/Manila");
+			$date = date("Y-m-d G:i:s");
+			
+			$stmt = $this->connection->db_connection->prepare("INSERT INTO spoilages (stock_id, user_id, amount, balance, price_balance, date_time) VALUES (:stock_id, :user_id, :amount, :balance, :price_balance, :date)");
 			$stmt->bindParam(":stock_id", $stock_id);
 			$stmt->bindParam(":user_id", $user_id);
 			$stmt->bindParam(":amount", $amount);
 			$stmt->bindParam(":balance", $current_qty);
 			$stmt->bindParam(":price_balance", $price_balance);
+			$stmt->bindParam(":date", $date);
 			$stmt->execute();
 
 			$last_id = $this->connection->db_connection->lastInsertId();

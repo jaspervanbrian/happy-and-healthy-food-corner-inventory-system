@@ -35,6 +35,7 @@ class User
             $stmt->bindParam(":email_address", $email_address);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
+                $password = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $this->connection->db_connection->prepare("INSERT INTO users (name, username, email_address, role, password, security_question, answer) VALUES (:name, :username, :email_address, :role, :password, :security_question, :answer)");
                 $stmt->bindParam(":name", $name);
                 $stmt->bindParam(":username", $username);
@@ -58,19 +59,23 @@ class User
             return "confirm";
         }
         $this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE password = :currentPassword AND id = :id");
-        $stmt->bindParam(":currentPassword", $currentPassword);
+        $stmt = $this->connection->db_connection->prepare("SELECT * FROM users WHERE id = :id");
         $stmt->bindParam(":id", $id);
         $stmt->execute();
         if ($stmt->rowCount() <= 0) {
             return "err";
         }
 
-        $stmt = $this->connection->db_connection->prepare("UPDATE users SET password = :password WHERE id = :id");
-        $stmt->bindParam(":password", $password);
-        $stmt->bindParam(":id", $id);
-        $stmt->execute();
-        return true;
+        if (password_verify($currentPassword, $user['password'])) {
+            $password = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $this->connection->db_connection->prepare("UPDATE users SET password = :password WHERE id = :id");
+            $stmt->bindParam(":password", $password);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            return true;
+        } else {
+            return "err";
+        }
     }
     public function systemAdminUpdatePassword($id, $password, $confirm_password)
     {
@@ -85,6 +90,7 @@ class User
             return "err";
         }
 
+        $password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->connection->db_connection->prepare("UPDATE users SET password = :password WHERE id = :id");
         $stmt->bindParam(":password", $password);
         $stmt->bindParam(":id", $id);
