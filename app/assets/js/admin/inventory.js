@@ -150,11 +150,11 @@ $(document).ready(function() {
             data: data,
         });
         requestPages.done(function(response, textStatus, jqXHR) {
-            if (parseInt(response) > 7) {
+            if (parseInt(response) > 6) {
                 $("#pagination").empty().append('<ul class="pagination"></ul>');
                 var $pagination = $("#pagination").find('.pagination');
                 $pagination.append('<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>');
-                totalPages = Math.ceil((parseInt(response)/7));
+                totalPages = Math.ceil((parseInt(response)/6));
                 for (var i = 1; i <= totalPages; i++) {
                     if (i === 1) {
                         $pagination.append('<li class="page-item active"><a class="page-link" href="#">' + i + '</a></li>');
@@ -478,8 +478,9 @@ $(document).ready(function() {
                             data: thisMonthData,
                         });
                         requestForThisMonthPages.done(function(response, textStatus, jqXHR) {
+                            $("#this-month-pagination"+ stock.id).empty().off();
                             if (parseInt(response) > 5) {
-                                $("#this-month-pagination"+ stock.id).empty().append('<ul class="pagination"></ul>');
+                                $("#this-month-pagination"+ stock.id).append('<ul class="pagination"></ul>');
                                 var $thisMonthPagination = $("#this-month-pagination"+ stock.id).find('.pagination');
                                 $thisMonthPagination.append('<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>');
                                 thisMonthTotalPages = Math.ceil((parseInt(response)/5));
@@ -491,71 +492,70 @@ $(document).ready(function() {
                                     }
                                 }
                                 $thisMonthPagination.append('<li class="page-item"><a class="page-link" href="#">Next</a></li>');
-                            } else {
-                                $("#this-month-pagination"+ stock.id).empty();
+                                $("#this-month-pagination"+ stock.id).on('click', '.page-item', function() {
+                                    if (!($(this).hasClass("disabled")))
+                                    {
+                                        if ($.trim($(this).text()) === "Previous") {
+                                            if (thisMonthCurrentPage === thisMonthTotalPages) {
+                                                $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
+                                            }
+                                            $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
+                                            thisMonthCurrentPage -= 1;
+                                            $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
+                                            thisMonthData = {
+                                                stock_id: stock.id,
+                                                type_search: $("#type_search" + stock.id).val(),
+                                                reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                                                page: thisMonthCurrentPage,
+                                            };
+                                            getThisMonth(thisMonthData);
+                                            if (thisMonthCurrentPage === 1) {
+                                                $(this).addClass('disabled');
+                                            }
+                                        } else if ($.trim($(this).text()) === "Next") {
+                                            if (thisMonthCurrentPage === 1) {
+                                                $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
+                                            }
+                                            $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
+                                            thisMonthCurrentPage += 1;
+                                            $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
+                                            thisMonthData = {
+                                                stock_id: stock.id,
+                                                type_search: $("#type_search" + stock.id).val(),
+                                                reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                                                page: thisMonthCurrentPage,
+                                            };
+                                            getThisMonth(thisMonthData);
+                                            if (thisMonthCurrentPage === thisMonthTotalPages) {
+                                                $(this).addClass('disabled');
+                                            }
+                                        } else {
+                                            $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
+                                            thisMonthCurrentPage = parseInt($(this).text());
+                                            $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
+                                            thisMonthData = {
+                                                stock_id: stock.id,
+                                                type_search: $("#type_search" + stock.id).val(),
+                                                reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
+                                                page: thisMonthCurrentPage,
+                                            };
+                                            getThisMonth(thisMonthData);
+                                            if (thisMonthCurrentPage === 1) {
+                                                $("#this-month-pagination"+ stock.id).find(':contains("Previous")').addClass('disabled');
+                                                $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
+                                            }
+                                            if (thisMonthCurrentPage === thisMonthTotalPages) {
+                                                $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
+                                                $("#this-month-pagination"+ stock.id).find(':contains("Next")').addClass('disabled');
+                                            }
+                                        }
+                                    }
+                                    console.log(thisMonthCurrentPage);
+                                });
                             }
                         });
                         requestForThisMonthPages.fail(function(jqXHR, textStatus, errorThrown) {
                             $("#flash-message").empty().removeClass().addClass("alert alert-danger").show().append(errorThrown).delay( 5000 ).slideUp(300);
-                        });
-                        $("#this-month-pagination"+ stock.id).on('click', '.page-item', function() {
-                            if (!($(this).hasClass("disabled")))
-                            {
-                                if ($.trim($(this).text()) === "Previous") {
-                                    if (thisMonthCurrentPage === thisMonthTotalPages) {
-                                        $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
-                                    }
-                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
-                                    thisMonthCurrentPage -= 1;
-                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
-                                    thisMonthData = {
-                                        stock_id: stock.id,
-                                        type_search: $("#type_search" + stock.id).val(),
-                                        reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
-                                        page: thisMonthCurrentPage,
-                                    };
-                                    getThisMonth(thisMonthData);
-                                    if (thisMonthCurrentPage === 1) {
-                                        $(this).addClass('disabled');
-                                    }
-                                } else if ($.trim($(this).text()) === "Next") {
-                                    if (thisMonthCurrentPage === 1) {
-                                        $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
-                                    }
-                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
-                                    thisMonthCurrentPage += 1;
-                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
-                                    thisMonthData = {
-                                        stock_id: stock.id,
-                                        type_search: $("#type_search" + stock.id).val(),
-                                        reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
-                                        page: thisMonthCurrentPage,
-                                    };
-                                    getThisMonth(thisMonthData);
-                                    if (thisMonthCurrentPage === thisMonthTotalPages) {
-                                        $(this).addClass('disabled');
-                                    }
-                                } else {
-                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').removeClass('active');
-                                    thisMonthCurrentPage = parseInt($(this).text());
-                                    $("#this-month-pagination"+ stock.id).find(':contains(' + thisMonthCurrentPage + ')').addClass('active');
-                                    thisMonthData = {
-                                        stock_id: stock.id,
-                                        type_search: $("#type_search" + stock.id).val(),
-                                        reference_keyword_search: $("#reference_keyword_search" + stock.id).val(),
-                                        page: thisMonthCurrentPage,
-                                    };
-                                    getThisMonth(thisMonthData);
-                                    if (thisMonthCurrentPage === 1) {
-                                        $("#this-month-pagination"+ stock.id).find(':contains("Previous")').addClass('disabled');
-                                        $("#this-month-pagination"+ stock.id).find(':contains("Next")').removeClass('disabled');
-                                    }
-                                    if (thisMonthCurrentPage === thisMonthTotalPages) {
-                                        $("#this-month-pagination"+ stock.id).find(':contains("Previous")').removeClass('disabled');
-                                        $("#this-month-pagination"+ stock.id).find(':contains("Next")').addClass('disabled');
-                                    }
-                                }
-                            }
                         });
                         //-------------------------------------------------------------------------------------------------------------
                     }
