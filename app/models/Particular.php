@@ -112,7 +112,7 @@ class Particular
 				$stmt->bindParam(":to_date", $to_date);
 				$stmt->execute();
 				return $stmt->rowCount();
-			} else if ($type_search === "Purchase Orders") {
+			} else if ($type_search === "Purchase Order") {
 				$this->connection->db_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 				$stmt = $this->connection->db_connection->prepare("SELECT * FROM particulars WHERE stock_id = :stock_id AND supplier_reference LIKE :supplier_reference AND type = 'Purchase Order' AND date_time BETWEEN :from_date AND :to_date");
 				$stmt->bindParam(":stock_id", $stock_id);
